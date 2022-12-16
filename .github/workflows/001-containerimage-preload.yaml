@@ -1,7 +1,7 @@
 # Copyright the Hyperledger Fabric contributors. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-name: containerimage-preload
+name: 001-containerimage-preload
 
 on:
   create:
@@ -53,4 +53,4 @@ jobs:
               docker push "${newtag}"
           done
 
-          
+

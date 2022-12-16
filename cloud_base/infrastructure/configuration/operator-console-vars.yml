@@ -1,0 +1,102 @@
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+---
+# The type of K8S cluster this is using
+target: k8s
+
+# If the target cluster is OpenShift use this value for target
+# target: openshift
+
+arch: amd64
+
+# k8s namespace for the operator and console
+namespace: fabricinfra
+
+
+# Console name/domain
+console_name: samara-console
+console: samara-console
+console_domain: samara-alpha-dc6f55db2bd19fe679c44828d91f16b3-0000.eu-gb.containers.appdomain.cloud
+
+#  default configuration for the console
+# password reset will be required on first login
+console_email: admin
+console_default_password: password
+
+# different k8s clusters will be shipped with differently named default storage providers
+# or none at all.  KIND for example has one called 'standard'
+console_storage_class: ibmc-vpc-block-general-purpose
+
+fabric_container_registry: uk.icr.io/samara-alpha
+fabric_version: 2.4.3
+
+ca_image: "{{ fabric_container_registry }}/fabric-ca"
+ca_image_label: "1.5.5"
+# peer_image: "{{ fabric_container_registry }}/k8s-fabric-peer"
+# peer_image_label: "latest"
+peer_image: "{{ fabric_container_registry }}/fabric-peer"
+peer_image_label: "2.5.0-alpha1"
+orderer_image: "{{ fabric_container_registry }}/fabric-orderer"
+orderer_image_label: "{{ fabric_version }}"
+tools_image: "{{ fabric_container_registry }}/fabric-tools"
+tools_image_label: "{{ fabric_version }}"
+operator_image: "{{ fabric_container_registry }}/fabric-operator"
+operator_image_label: 4b222fe-amd64
+
+init_image: "{{ fabric_container_registry }}/ubi-minimal"
+init_image_label: latest
+grpcweb_image: "{{ fabric_container_registry }}/grpc-web"
+grpcweb_image_label: latest
+couchdb_image: "{{ fabric_container_registry }}/couchdb"
+couchdb_image_label: 3.2.1
+console_image: "{{ fabric_container_registry }}/fabric-console"
+console_image_label: latest
+deployer_image: "{{ fabric_container_registry }}/fabric-deployer"
+deployer_image_label: latest-amd64
+
+fabric_operator_image: "{{ operator_image }}:{{ operator_image_label }}"
+fabric_console_image: "{{ console_image }}:{{ console_image_label }}"
+fabric_deployer_image: "{{ deployer_image }}:{{ deployer_image_label }}"
+fabric_ca_image: "{{ ca_image }}:{{ ca_image_label }}"
+fabric_peer_image: "{{ peer_image }}:{{ peer_image_label }}"
+fabric_orderer_image: "{{ orderer_image }}:{{ orderer_image_label }}"
+fabric_tools_image: "{{ tools_image }}:{{ tools_image_label }}"
+
+image_pull_secret: all-icr-io
+
+
+console_versions:
+  ca:
+    1.5.3-1:
+      default: true
+      version: 1.5.3-1
+      image:
+        caInitImage: "{{init_image}}"
+        caInitTag: "{{init_image_label}}"
+        caImage: "{{ca_image}}"
+        caTag: "{{ca_image_label}}"
+  peer:
+    2.4.3-1:
+      default: true
+      version: 2.4.3-1
+      image:
+        peerInitImage: "{{init_image}}"
+        peerInitTag: "{{init_image_label}}"
+        peerImage: "{{peer_image}}"
+        peerTag: "{{peer_image_label}}"
+        couchdbImage: "{{couchdb_image}}"
+        couchdbTag: "{{console_image_label}}"
+        grpcwebImage: "{{grpcweb_image}}"
+        grpcwebTag: "{{grpcweb_image_label}}"
+  orderer:
+    2.4.3-1:
+      default: true
+      version: 2.4.3-1
+      image:
+        ordererInitImage: "{{init_image}}"
+        ordererInitTag: "{{init_image_label}}"
+        ordererImage: "{{orderer_image}}"
+        ordererTag: "{{orderer_image_label}}"
+        grpcwebImage: "{{grpcweb_image}}"
+        grpcwebTag: "{{grpcweb_image_label}}"

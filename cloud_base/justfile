@@ -1,0 +1,289 @@
+#
+# Copyright contributors to the Hyperledgendary Full Stack Asset Transfer project
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at:
+#
+# 	  http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+# Main justfile to run all the development scripts
+# To install 'just' see https://github.com/casey/just#installation
+
+
+###############################################################################
+# COMMON TARGETS                       `                                       #
+###############################################################################
+
+
+# Ensure all properties are exported as shell env-vars
+set export
+
+# set the current directory, and the location of the test dats
+CWDIR := justfile_directory()
+
+_default:
+  @just -f {{justfile()}} --list
+
+# Run the check script to validate tool versions installed
+check:
+  ${CWDIR}/check.sh
+
+cluster_name    := env_var_or_default("WORKSHOP_CLUSTER_NAME",       "kind")
+cluster_runtime := env_var_or_default("WORKSHOP_CLUSTER_RUNTIME",    "kind")
+ingress_domain  := env_var_or_default("WORKSHOP_INGRESS_DOMAIN",     "localho.st")
+storage_class   := env_var_or_default("WORKSHOP_STORAGE_CLASS",      "standard")
+chaincode_name  := env_var_or_default("WORKSHOP_CHAINCODE_NAME",     "asset-transfer")
+internal_repo_endpoint  := env_var_or_default("WORKSHOP_INTERNAL_REPO",     "localhost:5000")
+external_repo_endpoint  := env_var_or_default("WORKSHOP_EXTERNAL_REPO",     "localhost:5000")
+
+ansible_image   := env_var_or_default("ANSIBLE_IMAGE",      "ghcr.io/ibm-blockchain/ofs-ansibe:sha-ac6fd82")
+namespace       := env_var_or_default("WORKSHOP_NAMESPACE", "fabricinfra")
+
+
+# just set up everything with Ansible
+doit: create-config operator console network
+
+
+# Review the Ansible Blockchain Collection configuration in _cfg/
+create-config:
+    #!/bin/bash
+    mkdir -p _cfg
+    rm -rf _cfg/* 
+
+    cp ${CWDIR}/infrastructure/configuration/*.yml ${CWDIR}/_cfg
+
+    cat ${CWDIR}/infrastructure/configuration/operator-console-vars.yml | envsubst > ${CWDIR}/_cfg/operator-console-vars.yml
+
+    echo ""
+    echo ">> Fabric Common Configuration"
+    echo ""
+    cat ${CWDIR}/_cfg/fabric-common-vars.yml
+
+    echo ""
+    echo ">> Fabric Org1 Configuration"
+    echo ""
+    cat ${CWDIR}/_cfg/fabric-org1-vars.yml
+
+    echo ""
+    echo ">> Fabric Org2 Configuration"
+    echo ""
+    cat ${CWDIR}/_cfg/fabric-org2-vars.yml
+
+    echo ""
+    echo ">> Fabric Orderer Configuration"
+    echo ""
+    cat ${CWDIR}/_cfg/fabric-ordering-org-vars.yml
+
+    echo ""
+    echo ">> Fabric Operations Console Configuration"
+    echo ""
+    cat ${CWDIR}/_cfg/operator-console-vars.yml
+    echo ""
+
+    ibmcloud ks cluster config --cluster cduf2eml09a3f91qrj1g  --output yaml > _cfg/k8s_context.yaml
+
+# Start the Kubernetes fabric-operator with the Ansible Blockchain Collection
+ingress:
+    #!/bin/bash
+    set -ex -o pipefail
+
+    export EXTRAS=""
+    if [ -f "/_cfg/k8s_context.yaml" ]; then    
+        export EXTRAS=" -e KUBECONFIG=/_cfg/k8s_context.yaml"
+    fi
+
+    docker run \
+        --rm \
+        -v ${HOME}/.kube/:/home/ibp-user/.kube/ \
+        -v ${CWDIR}/_cfg:/_cfg \
+        -v $(pwd)/infrastructure/kind_console_ingress:/playbooks \
+        --network=host  \
+        -e KUBECONFIG=/_cfg/k8s_context.yaml \
+        --workdir /playbooks \
+        {{ansible_image}} \
+            playbook /playbooks/90-KIND-ingress.yml
+
+
+
+# Start the Kubernetes fabric-operator with the Ansible Blockchain Collection
+operator:
+    #!/bin/bash
+    set -ex -o pipefail
+
+    docker run \
+        --rm \
+        -v ${HOME}/.kube/:/home/ibp-user/.kube/ \
+        -v ${CWDIR}/_cfg:/_cfg \
+        -v $(pwd)/infrastructure/operator_console_playbooks:/playbooks \
+         -e KUBECONFIG=/_cfg/k8s_context.yaml \
+        --network=host \
+        {{ansible_image}} \
+        ansible-playbook /playbooks/01-operator-install.yml
+
+# Start the Fabric Operations Console with the Ansible Blockchain Collection
+console:
+    #!/bin/bash
+    set -ex -o pipefail
+
+    docker run \
+        --rm \
+        -v ${HOME}/.kube/:/home/ibp-user/.kube/ \
+        -v $(pwd)/infrastructure/operator_console_playbooks:/playbooks \
+        -e KUBECONFIG=/_cfg/k8s_context.yaml \
+        -v ${CWDIR}/_cfg:/_cfg \
+        --network=host \
+        {{ansible_image}} \
+            ansible-playbook /playbooks/02-console-install.yml
+
+    AUTH=$(curl -X POST https://{{namespace}}-samara-console-console.{{ingress_domain}}:443/ak/api/v2/permissions/keys -u admin:password -k -H 'Content-Type: application/json' -d '{"roles": ["writer", "manager"],"description": "newkey"}')
+    KEY=$(echo $AUTH | jq .api_key | tr -d '"')
+    SECRET=$(echo $AUTH | jq .api_secret | tr -d '"')
+
+    echo "Writing authentication file for Ansible based IBP (Software) network building"
+    mkdir -p _cfg
+    cat << EOF > $CWDIR/_cfg/auth-vars.yml
+    api_key: $KEY
+    api_endpoint: https://{{namespace}}-samara-console-console.{{ingress_domain}}/
+    api_authtype: basic
+    api_secret: $SECRET
+    EOF
+    cat ${CWDIR}/_cfg/auth-vars.yml
+
+
+# Build a sample Fabric network with the Ansible Blockchain Collection
+network:
+    #!/bin/bash
+    set -ex -o pipefail
+
+    docker run \
+        --rm \
+        -u $(id -u) \
+        -v ${HOME}/.kube/:/home/ibp-user/.kube/ \
+        -v ${CWDIR}/infrastructure/fabric_network_playbooks:/playbooks \
+        -e KUBECONFIG=/_cfg/k8s_context.yaml \
+        -v ${CWDIR}/_cfg:/_cfg \
+        --network=host \
+        {{ansible_image}} \
+            ansible-playbook /playbooks/00-complete.yml
+
+
+# Bring down the sample network created with the Ansible Blockchain Collection
+network-down:
+    #!/bin/bash
+    set -ex -o pipefail
+
+    kubectl delete namespace {{ namespace }} --ignore-not-found
+
+
+# Build a chaincode package with Ansible Blockchain Collection
+build-chaincode:
+    #!/bin/bash
+    set -ex -o pipefail
+    pushd ${CWDIR}/contracts/asset-transfer-typescript
+
+    if [ "{{cluster_runtime}}" = "openshift" ]; then
+        export IMAGE_NAME="{{namespace}}/{{chaincode_name}}"
+    else
+        export IMAGE_NAME="{{chaincode_name}}"
+    fi
+    DOCKER_BUILDKIT=1 docker build -t {{external_repo_endpoint}}/${IMAGE_NAME} . --target k8s
+    docker push {{external_repo_endpoint}}/${IMAGE_NAME}
+
+    # note the double { } for escaping
+    export IMG_SHA=$(docker inspect --format='{{{{index .RepoDigests 0}}' {{external_repo_endpoint}}/${IMAGE_NAME} | cut -d'@' -f2)
+    weft chaincode package k8s --name {{internal_repo_endpoint}}/${IMAGE_NAME} --digest ${IMG_SHA} --label {{chaincode_name}} 
+    mv {{chaincode_name}}.tgz ${CWDIR}/_cfg
+    popd
+
+
+# Deploy a chaincode package with the Ansible Blockchain Collection
+deploy-chaincode:
+    #!/bin/bash
+    set -ex -o pipefail
+
+    cp ${CWDIR}/contracts/asset-transfer-typescript/asset-transfer-chaincode-vars.yml ${CWDIR}/_cfg
+    docker run \
+        --rm \
+        -u $(id -u) \
+        -v ${HOME}/.kube/:/home/ibp-user/.kube/ \
+        -v ${CWDIR}/infrastructure/production_chaincode_playbooks:/playbooks \
+        -e KUBECONFIG=/_cfg/k8s_context.yaml \
+        -v ${CWDIR}/_cfg:/_cfg \
+        --network=host \
+        {{ansible_image}} \
+            ansible-playbook /playbooks/19-install-and-approve-chaincode.yml
+
+    docker run \
+        --rm \
+        -u $(id -u) \
+        -v ${HOME}/.kube/:/home/ibp-user/.kube/ \
+        -v ${CWDIR}/infrastructure/production_chaincode_playbooks:/playbooks \
+        -e KUBECONFIG=/_cfg/k8s_context.yaml \
+        -v ${CWDIR}/_cfg:/_cfg \
+        --network=host \
+        {{ansible_image}} \
+            ansible-playbook /playbooks/20-install-and-approve-chaincode.yml
+
+    docker run \
+        --rm \
+        -u $(id -u) \
+        -v ${HOME}/.kube/:/home/ibp-user/.kube/ \
+        -v ${CWDIR}/infrastructure/production_chaincode_playbooks:/playbooks \
+        -e KUBECONFIG=/_cfg/k8s_context.yaml \
+        -v ${CWDIR}/_cfg:/_cfg \
+        --network=host \
+        {{ansible_image}} \
+            ansible-playbook /playbooks/21-commit-chaincode.yml
+
+# Creates a new identity for an application to use
+ready-application:
+    #!/bin/bash
+    set -ex -o pipefail
+
+    docker run \
+        --rm \
+        -u $(id -u) \
+        -v ${HOME}/.kube/:/home/ibp-user/.kube/ \
+        -v ${CWDIR}/infrastructure/asset_tx_api_playbooks:/playbooks  \
+        -e KUBECONFIG=/_cfg/k8s_context.yaml \
+        -v ${CWDIR}/_cfg:/_cfg \
+        --network=host \
+        {{ansible_image}} \
+            ansible-playbook /playbooks/01-fabric-endpoints-org1.yaml
+
+    docker run \
+        --rm \
+        -u $(id -u) \
+        -v ${HOME}/.kube/:/home/ibp-user/.kube/ \
+        -v ${CWDIR}/infrastructure/asset_tx_api_playbooks:/playbooks  \
+        -e KUBECONFIG=/_cfg/k8s_context.yaml \
+        -v ${CWDIR}/_cfg:/_cfg \
+        --network=host \
+        {{ansible_image}} \
+            ansible-playbook /playbooks/02-fabric-endpoints-org2.yaml
+
+
+deploy-application:
+    #!/bin/bash
+    set -ex -o pipefail
+
+    docker run \
+        --rm \
+        -u $(id -u) \
+        -v ${HOME}/.kube/:/home/ibp-user/.kube/ \
+        -v ${CWDIR}/infrastructure/asset_tx_api:/playbooks  \
+        -e KUBECONFIG=/_cfg/k8s_context.yaml \
+        -v ${CWDIR}/_cfg:/_cfg \
+        --network=host \
+        {{ansible_image}} \
+            ansible-playbook /playbooks/05-rest_redis.yaml

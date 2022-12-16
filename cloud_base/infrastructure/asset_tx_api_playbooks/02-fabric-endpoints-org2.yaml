@@ -1,0 +1,57 @@
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+---
+- name: Register application
+  hosts: localhost
+  vars:
+    wallet: "/_cfg"
+  vars_files:
+    - /_cfg/asset-transfer-chaincode-vars.yml
+    - /_cfg/fabric-common-vars.yml
+    - /_cfg/fabric-org2-vars.yml
+    - /_cfg/auth-vars.yml    
+  tasks:
+    - name: Register a new identity ORG2
+      ibm.blockchain_platform.registered_identity:
+        api_endpoint: "{{ api_endpoint }}"
+        api_authtype: "{{ api_authtype }}"
+        api_key: "{{ api_key }}"
+        api_secret: "{{ api_secret | default(omit) }}"
+        api_token_endpoint: "{{ api_token_endpoint | default(omit) }}"
+        certificate_authority: "{{ org2_ca_name }}"
+        registrar: "{{ wallet }}/{{ org2_ca_name }} Admin.json"
+        enrollment_id: "{{ application_enrollment_id }}"
+        enrollment_secret: "{{ application_enrollment_secret }}"
+        max_enrollments: "{{ application_max_enrollments }}"
+        type: "{{ application_enrollment_type }}"
+        attributes:
+          - name: "{{ smart_contract_name }}.admin"
+            value: "true"
+
+    - name: Enroll an identity
+      ibm.blockchain_platform.enrolled_identity:
+        api_endpoint: "{{ api_endpoint }}"
+        api_authtype: "{{ api_authtype }}"
+        api_key: "{{ api_key }}"
+        api_secret: "{{ api_secret | default(omit) }}"
+        api_token_endpoint: "{{ api_token_endpoint | default(omit) }}"
+        certificate_authority: "{{ org2_ca_name }}"
+        name:  "{{ smart_contract_name }}.admin"
+        enrollment_id: "{{ application_enrollment_id }}"
+        enrollment_secret: "{{ application_enrollment_secret }}"
+        path: "{{ wallet }}/{{  smart_contract_name }}_appid_org2.json"
+
+    - name: Create a connection profile
+      ibm.blockchain_platform.connection_profile:
+        api_endpoint: "{{ api_endpoint }}"
+        api_authtype: "{{ api_authtype }}"
+        api_key: "{{ api_key }}"
+        api_secret: "{{ api_secret | default(omit) }}"
+        api_token_endpoint: "{{ api_token_endpoint | default(omit) }}"
+        name: "{{ org2_name }} Gateway"
+        path: "{{ wallet }}/{{ org2_name }}_gateway.json"
+        organization: "{{ org2_name }}"
+        certificate_authority: "{{ org2_ca_name }}"
+        peers:
+          - "{{ org2_peer_name }}"

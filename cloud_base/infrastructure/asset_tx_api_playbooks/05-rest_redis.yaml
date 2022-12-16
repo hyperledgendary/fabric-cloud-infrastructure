@@ -1,0 +1,63 @@
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+---
+- name: Deploy the Rest API
+  hosts: localhost
+  vars:
+    - hlf_connection_profile_org1: "{{ lookup('file','/_cfg/Org1_gateway.json') }}"
+    - hlf_connection_profile_org2: "{{ lookup('file','/_cfg/Org2_gateway.json') }}"
+    - hlf_org1_app_id: "{{ lookup('file','/_cfg/asset-transfer-tx_appid_org1.json') }}"
+    - hlf_org2_app_id: "{{ lookup('file','/_cfg/asset-transfer-tx_appid_org2.json') }}"
+  vars_files:
+    - /_cfg/fabric-common-vars.yml
+  tasks:
+
+    - name: debug
+      debug:
+        msg: "{{hlf_connection_profile_org1  }}" 
+
+    - name: Create ConfigMapConfiguration
+      vars: 
+        hlf_certificate_org1: "{{ hlf_org1_app_id | json_query('cert') }}"
+        hlf_certificate_org2: "{{ hlf_org2_app_id | json_query('cert') }}"
+        hlf_private_key_org1: "{{ hlf_org1_app_id | json_query('private_key') }}"
+        hlf_private_key_org2: "{{ hlf_org2_app_id | json_query('private_key') }}"   
+      kubernetes.core.k8s:
+        state: present
+        namespace: fabricinfra
+        definition: 
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: fabric-rest-sample-config
+          data:
+            HLF_CONNECTION_PROFILE_ORG1: |
+                "{{hlf_connection_profile_org1 }}"    
+            HLF_CERTIFICATE_ORG1: "{{hlf_certificate_org1}}"   
+            HLF_PRIVATE_KEY_ORG1: "{{hlf_private_key_org1}}"
+            HLF_CONNECTION_PROFILE_ORG2: |
+                "{{hlf_connection_profile_org1}}"
+            HLF_CERTIFICATE_ORG2: "{{hlf_certificate_org2}}"
+            HLF_PRIVATE_KEY_ORG2: "{{hlf_private_key_org2}}"
+
+
+    - name: Create Deployment for REST / REDIS_HOST
+      kubernetes.core.k8s: 
+        state: present
+        namespace: fabricinfra
+        template: 
+          - path: "./templates/deployment.yaml.j2"
+
+    - name: Create Service & Ingress
+      vars: 
+        DOMAIN: "{{ingress_domain}}"
+      kubernetes.core.k8s: 
+        state: present
+        namespace: fabricinfra
+
+        template: 
+          - path: "./templates/service-ingress.yaml.j2"
+
+
+    

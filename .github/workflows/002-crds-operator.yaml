@@ -1,7 +1,7 @@
 # Copyright the Hyperledger Fabric contributors. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-name: crds-operator
+name: 002-crds-operator
 
 on:
   create:
@@ -23,9 +23,10 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/ibm-blockchain/ofs-ansibe:sha-ac6fd82
+      options: --user root
       volumes:
-        - cloud-base/infrastructure/operator_console_playbooks:/playbooks
-        - _cfg:/_cfg
+        -  ${{ github.workspace }}/cloud_base/infrastructure/operator_console_playbooks:/playbooks
+        -  ${{ github.workspace }}/_cfg:/_cfg
     steps:
       - uses: actions/checkout@v3
       # Download and Install IBM Cloud CLI
