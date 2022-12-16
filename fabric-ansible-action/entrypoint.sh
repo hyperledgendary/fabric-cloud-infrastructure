@@ -2,9 +2,11 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 #
-set -euo pipefail
+set -xeuo pipefail
 
-env | sort
+# env | sort
+# ls -lart
+# ls -lart _cfg
 
 # # If this image is run with -u <random UID>, as happens on Red Hat OpenShift, then
 # # the user is not in the /etc/passwd file. This causes Ansible to fail, so we need
@@ -20,9 +22,11 @@ export PYTHONPATH=/home/ibp-user/.local/lib/python3.9/site-packages
 export HOME=/home/ibp-user
 cd ${HOME}
 
+export KUBECONFIG="${GITHUB_WORKSPACE}/_cfg/k8s_context.yaml"
+
 # Run a shell or the specified command.
 if [ $# -eq 0 ]; then
     exec /bin/bash
 else
-    exec ansible-playbook -e ROOT=${GITHUB_WORKSPACE} ${GITHUB_WORKSPACE}/${INPUT_PLAYBOOK}
+    ansible-playbook -e ROOT=${GITHUB_WORKSPACE} ${GITHUB_WORKSPACE}/${INPUT_PLAYBOOK}
 fi

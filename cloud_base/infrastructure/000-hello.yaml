@@ -1,7 +1,16 @@
 ---
 - hosts: localhost
   vars_files: 
-    - "{{ROOT}}/cloud_base/infrastructure/configuration/fabric-common-vars.yml"
+    - "{{ROOT}}/_cfg/operator-console-vars.yml"
   tasks:
     - ansible.builtin.debug:
-        msg: "Hello {{channel_name}}"
+        msg: "Hello {{namespace}}"
+    - name: Get a list of all pods from any namespace
+      kubernetes.core.k8s_info:
+        kind: Pod
+        namespace: fabricinfra
+      register: pod_list
+    - ansible.builtin.debug:
+        msg: "{{pod_list}}"
+
+    

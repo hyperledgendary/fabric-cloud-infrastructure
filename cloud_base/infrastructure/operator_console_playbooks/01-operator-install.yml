@@ -6,8 +6,10 @@
   hosts: localhost
   vars_files:
     - "{{ROOT}}/_cfg/operator-console-vars.yml"
+
   vars:
     state: present
+    kubeconfig: "{{ROOT}}/_cfg/k8s_context.yaml"
     wait_timeout: 3600
   roles:
     - ibm.blockchain_platform.fabric_operator_crds
