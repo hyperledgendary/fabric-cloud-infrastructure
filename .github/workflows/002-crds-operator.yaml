@@ -18,32 +18,30 @@ env:
   PROJECT_NAME: samara-alpha
   
 jobs:
-  authenticate:
+  crds-operator:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      # - name: Install IBM Cloud CLI
-      #   run: |
-      #     curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
-      #     ibmcloud --version
-      #     ibmcloud config --check-version=false
-      #     ibmcloud plugin install -f kubernetes-service
-      #     ibmcloud plugin install -f container-registry      
+      - name: Install IBM Cloud CLI
+        run: |
+          curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
+          ibmcloud --version
+          ibmcloud config --check-version=false
+          ibmcloud plugin install -f kubernetes-service
+          ibmcloud plugin install -f container-registry      
 
-      # - name: Authenticate with IBM Cloud CLI
-      #   run: |
-      #     ibmcloud login --apikey "${IBM_CLOUD_API_KEY}" -r "${IBM_CLOUD_REGION}" -g Blockchain-Test
-      #     ibmcloud cr region-set "${IBM_CLOUD_REGION}"
-      #     ibmcloud cr login
+      - name: Authenticate with IBM Cloud CLI
+        run: |
+          ibmcloud login --apikey "${IBM_CLOUD_API_KEY}" -r "${IBM_CLOUD_REGION}" -g Blockchain-Test
+          ibmcloud cr region-set "${IBM_CLOUD_REGION}"
+          ibmcloud cr login
 
-      #     mkdir -p _cfg
-      #     ibmcloud ks cluster config --cluster ${CLUSTER_ID}  --output yaml > _cfg/k8s_context.yaml
+          mkdir -p _cfg
+          ibmcloud ks cluster config --cluster ${CLUSTER_ID}  --output yaml > _cfg/k8s_context.yaml
 
       - name: Run Fabric Ansible action
         id: operatorinstall
         uses: ./fabric-ansible-action
         with:
-          playbook: /playbooks/01-operator-install.yml
+          playbook: cloud_base/infrastructure/operator_console_playbooks/01-operator-install.yml
 
-          
-          

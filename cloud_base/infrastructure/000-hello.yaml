@@ -1,7 +1,7 @@
 ---
 - hosts: localhost
   vars_files: 
-    - /_cfg/auth-vars.yml
+    - "{{ROOT}}/cloud_base/infrastructure/configuration/fabric-common-vars.yml"
   tasks:
     - ansible.builtin.debug:
-        msg: "Hello"
+        msg: "Hello {{channel_name}}"
