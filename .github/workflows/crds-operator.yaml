@@ -1,7 +1,7 @@
 # Copyright the Hyperledger Fabric contributors. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-name: containerimage-preload
+name: crds-operator
 
 on:
   create:
@@ -21,6 +21,11 @@ env:
 jobs:
   authenticate:
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/ibm-blockchain/ofs-ansibe:sha-ac6fd82
+      volumes:
+        - cloud-base/infrastructure/operator_console_playbooks:/playbooks
+        - _cfg:/_cfg
     steps:
       - uses: actions/checkout@v3
       # Download and Install IBM Cloud CLI
@@ -38,19 +43,14 @@ jobs:
           ibmcloud cr region-set "${IBM_CLOUD_REGION}"
           ibmcloud cr login
 
+          mkdir -p _cfg
+          ibmcloud ks cluster config --cluster ${CLUSTER_ID}  --output yaml > _cfg/k8s_context.yaml
+
       - name: BuildData
         id: builddata
         run: |
-          set -ex -o pipefail
+          ls -lart
+          ansible-playbook -e KUBECONFIG=/_cfg/k8s_context.yaml /playbooks/01-operator-install.yml
 
-          images=($(cat ./cloud-base-cfg/imagelist))
-          echo $images
-
-          for t in "${images[@]}"; do
-              newtag=${REGISTRY_HOSTNAME}/${PROJECT_NAME}/"${t##*/}"           
-              docker pull "${t}"
-              docker tag "${t}" "${newtag}"
-              docker push "${newtag}"
-          done
-
+          
           
