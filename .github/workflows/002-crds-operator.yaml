@@ -39,14 +39,12 @@ jobs:
           mkdir -p _cfg
           ibmcloud ks cluster config --cluster ${CLUSTER_ID} 
           ibmcloud ks cluster config --cluster ${CLUSTER_ID}  --output yaml > _cfg/k8s_context.yaml
-          cat _cfg/k8s_context.yaml
 
       # This might well be more sophisticated
       # TODO: Remove duplication with the docker image upload
       - name: Create the Configuration for the Fabric Network
         run: |
           cp cloud_base_cfg/operator-console-vars.yml _cfg/
-          cat _cfg/k8s_context.yaml
 
       - name: Run Fabric Ansible action
         id: operatorinstall
@@ -54,3 +52,8 @@ jobs:
         with:
           playbook: cloud_base/infrastructure/operator_console_playbooks/01-operator-install.yml
 
+      - name: Run Fabric Ansible action
+        id: consoleinstall
+        uses: ./fabric-ansible-action
+        with:
+          playbook: cloud_base/infrastructure/operator_console_playbooks/02-console-install.yml
