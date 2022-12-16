@@ -46,14 +46,14 @@ jobs:
         run: |
           cp cloud_base_cfg/operator-console-vars.yml _cfg/
 
-      - name: Run Fabric Ansible action
+      - name: Create the Fabric CRDs/Operator
         id: operatorinstall
         uses: ./fabric-ansible-action
         with:
-          playbook: cloud_base/infrastructure/operator_console_playbooks/01-operator-install.yml
+          playbook: playbooks/operator_console_playbooks/01-operator-install.yml
 
-      - name: Run Fabric Ansible action
+      - name: Create the Fabric Operations Console
         id: consoleinstall
         uses: ./fabric-ansible-action
         with:
-          playbook: cloud_base/infrastructure/operator_console_playbooks/02-console-install.yml
+          playbook: playbooks/operator_console_playbooks/02-console-install.yml

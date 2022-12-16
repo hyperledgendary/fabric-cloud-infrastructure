@@ -9,18 +9,19 @@ To adopt for your own cluster look out for <YOUR_CLUSTER_INFO> for places where 
 
 - Clone this repo
 - Get an API key/ Cluster Config as per your vendor to permit remote management of the cluster
-- Use the configured GHA pipelines for the major actions
+- Use the configured GHA pipelines for the major actions set out below
 
 ## Cluster Bootstrap setup steps
 
 *DockerImages:*
 You may need to preload the docker images to a registry accesible to your cluster.
 
-> Run the `dockerimage-preload` pipeline
+> Run the `001-containerimage-preload` pipeline
 
-*CRDs:*
+*CRDs & Operator & Console:*
 
-This needs to occur once for each cluster - this can be achieved by running as an example the 
-'crds-bootstrap-pipline'
+The CRDs and Fabric Operator needs to be installed once per cluster; the console is often installed
+at the same time - and at the moment is needed for the rest of the Ansible playbooks (for the moment!)
 
+> Run the `002-crds-operator` pipeline
 

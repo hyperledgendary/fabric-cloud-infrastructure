@@ -1,0 +1,28 @@
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+---
+- name: Deploy Opensource Console
+  hosts: localhost
+  vars_files:
+    - "{{ROOT}}/_cfg/operator-console-vars.yml"
+  vars:
+    state: present
+    wait_timeout: 3600
+  roles:
+    - ibm.blockchain_platform.fabric_console
+  post_tasks:
+    - name: extract configuration information
+      shell: |
+        AUTH=$(curl -X POST https://{{namespace}}-{{console_domain}}-console.{{console_domain}}:443/ak/api/v2/permissions/keys -u admin:password -k -H 'Content-Type: application/json' -d '{"roles": ["writer", "manager"],"description": "newkey"}')
+        KEY=$(echo $AUTH | jq .api_key | tr -d '"')
+        SECRET=$(echo $AUTH | jq .api_secret | tr -d '"')
+
+        echo "Writing authentication file for Ansible based IBP (Software) network building"
+        cat << EOF > {{ROOT}}/_cfg/auth-vars.yml
+        api_key: $KEY
+        api_endpoint: https://{{namespace}}-{{console_domain}}-console.{{console_domain}}/
+        api_authtype: basic
+        api_secret: $SECRET
+        EOF
+        
