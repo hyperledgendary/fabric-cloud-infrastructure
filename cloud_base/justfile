@@ -128,8 +128,7 @@ operator:
          -e KUBECONFIG=/_cfg/k8s_context.yaml \
         --network=host \
         {{ansible_image}} \
-        ansible-playbook /playbooks/01-operator-install.yml
-
+       
 # Start the Fabric Operations Console with the Ansible Blockchain Collection
 console:
     #!/bin/bash

@@ -1,0 +1,16 @@
+# action.yml
+name: 'Fabric Ansible Action'
+description: 'Fabric Ansible Action'
+inputs:
+  playbook:  # id of input
+    description: 'playbook to run'
+    required: true
+    default: 'playbook.yaml'
+# outputs:
+#   time: # id of output
+#     description: 'The time we greeted you'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.playbook }}

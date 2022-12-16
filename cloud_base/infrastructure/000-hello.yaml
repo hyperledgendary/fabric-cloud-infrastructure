@@ -1,0 +1,7 @@
+---
+- hosts: localhost
+  vars_files: 
+    - /_cfg/auth-vars.yml
+  tasks:
+    - ansible.builtin.debug:
+        msg: "Hello"
