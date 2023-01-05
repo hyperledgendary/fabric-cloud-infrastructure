@@ -6,6 +6,9 @@ inputs:
     description: 'playbook to run'
     required: true
     default: 'playbook.yaml'
+  argsfile:  # id of input
+    description: 'additional args file'
+    required: false
 # outputs:
 #   time: # id of output
 #     description: 'The time we greeted you'
@@ -14,3 +17,4 @@ runs:
   image: 'Dockerfile'
   args:
     - ${{ inputs.playbook }}
+    - ${{ inputs.argsfile }}

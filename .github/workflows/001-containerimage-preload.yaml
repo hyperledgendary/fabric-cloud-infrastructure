@@ -38,9 +38,6 @@ jobs:
           ibmcloud cr region-set "${IBM_CLOUD_REGION}"
           ibmcloud cr login
 
-      - name: Architecture Configuration
-        
-
       - name: BuildData
         id: builddata
         run: |

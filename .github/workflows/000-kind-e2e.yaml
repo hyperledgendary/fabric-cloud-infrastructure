@@ -1,0 +1,64 @@
+# Copyright the Hyperledger Fabric contributors. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+name: 000-kind-e2e
+
+on:
+  pull_request:   
+  workflow_dispatch:
+
+env:
+  GITHUB_SHA: ${{ github.sha }}
+
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup and create the KIND cluster
+        run: |
+          set -xev
+          export KIND_API_SERVER_ADDRESS=$(sh .github/scripts/get-host-ip.sh)
+         
+          ./scripts/kind_with_nginx.sh
+
+          mkdir -p _cfg
+          kubectl config view --raw | sed "s/127.0.0.1/$KIND_API_SERVER_ADDRESS/g" > _cfg/k8s_context.yaml
+    
+          export TEST_NETWORK_INGRESS_DOMAIN=$(echo $KIND_API_SERVER_ADDRESS | tr -s '.' '-').nip.io
+          
+          echo "console_domain: $TEST_NETWORK_INGRESS_DOMAIN" >> _cfg/domain.yml
+       
+
+      - name: Create Configuration for the Fabric Network
+        run: |
+          set -xev
+          
+          # Copy to the working configuration directory all that is applicable
+          # 
+          # For the KIND End-End test this is a complete copy of all organizations
+          # information. But this should in reality be restricted to the this should be more targetted to the ogranization that 
+          # is running this workflow
+          
+          find ./architecture -name "*.yml" -exec cp {} _cfg \;
+          mv _cfg/operator-console-kind-vars.yml _cfg/operator-console-vars.yml
+
+
+      - name: Create the Fabric CRDs/Operator
+        id: operatorinstall
+        uses: ./fabric-ansible-action
+        with:
+          playbook: playbooks/operator_console_playbooks/01-operator-install.yml
+
+      - name: Create the Fabric Operations Console
+        id: consoleinstall
+        uses: ./fabric-ansible-action
+        with:
+          playbook: playbooks/operator_console_playbooks/02-console-install.yml
+          argsfile: _cfg/domain.yml
+
+      - name: Create Configuration for the Fabric Network
+        run: |
+          set -xev
+          cat _cfg/auth-vars.yml          

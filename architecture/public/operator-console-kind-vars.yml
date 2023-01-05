@@ -17,7 +17,7 @@ namespace: test-network
 # Console name/domain
 console_name: hlf-console
 console: hlf-console
-console_domain: localho.st
+
 
 #  default configuration for the console
 # password reset will be required on first login
