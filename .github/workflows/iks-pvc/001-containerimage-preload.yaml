@@ -1,0 +1,59 @@
+# Copyright the Hyperledger Fabric contributors. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+name: 001-containerimage-preload
+
+on:
+  create:
+    tags:
+      - "*"      
+  workflow_dispatch:
+
+env:
+  GITHUB_SHA: ${{ github.sha }}
+  IBM_CLOUD_API_KEY: ${{ secrets.IBM_CLOUD_API_KEY }}
+  IBM_CLOUD_REGION: eu-gb
+  REGISTRY_HOSTNAME: uk.icr.io
+  CLUSTER_ID: ${{ secrets.CLUSTER_ID }}  
+  PROJECT_NAME: samara-alpha
+  
+
+jobs:
+  authenticate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      # Download and Install IBM Cloud CLI
+      - name: Install IBM Cloud CLI
+        run: |
+          curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
+          ibmcloud --version
+          ibmcloud config --check-version=false
+          ibmcloud plugin install -f kubernetes-service
+          ibmcloud plugin install -f container-registry      
+    # Authenticate with IBM Cloud CLI
+      - name: Authenticate with IBM Cloud CLI
+        run: |
+          ibmcloud login --apikey "${IBM_CLOUD_API_KEY}" -r "${IBM_CLOUD_REGION}" -g Blockchain-Test
+          ibmcloud cr region-set "${IBM_CLOUD_REGION}"
+          ibmcloud cr login
+
+      - name: Architecture Configuration
+        
+
+      - name: BuildData
+        id: builddata
+        run: |
+          set -ex -o pipefail
+
+          images=($(cat ./_cfg/imagelist))
+          echo $images
+
+          for t in "${images[@]}"; do
+              newtag=${REGISTRY_HOSTNAME}/${PROJECT_NAME}/"${t##*/}"           
+              docker pull "${t}"
+              docker tag "${t}" "${newtag}"
+              docker push "${newtag}"
+          done
+
+

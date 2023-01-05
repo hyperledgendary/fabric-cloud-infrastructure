@@ -5,10 +5,10 @@
 - name: Create the channel
   hosts: localhost
   vars:
-    wallet: "/_cfg"  
+    wallet: "{{ROOT}}/_cfg"  
   vars_files:
-    - /_cfg/fabric-common-vars.yml
-    - /_cfg/fabric-org1-vars.yml
+    - "{{ROOT}}/_cfg/fabric-common-vars.yml"
+    - "{{ROOT}}/_cfg/fabric-org1-vars.yml"
   tasks:
     - name: Check to see if the channel already exists
       ibm.blockchain_platform.channel_block:

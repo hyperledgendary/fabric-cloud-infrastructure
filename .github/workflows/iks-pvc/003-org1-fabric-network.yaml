@@ -1,7 +1,7 @@
 # Copyright the Hyperledger Fabric contributors. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-name: 001-containerimage-preload
+name: 002-crds-operator
 
 on:
   create:
@@ -17,13 +17,11 @@ env:
   CLUSTER_ID: ${{ secrets.CLUSTER_ID }}  
   PROJECT_NAME: samara-alpha
   
-
 jobs:
-  authenticate:
+  crds-operator:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      # Download and Install IBM Cloud CLI
       - name: Install IBM Cloud CLI
         run: |
           curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
@@ -31,26 +29,25 @@ jobs:
           ibmcloud config --check-version=false
           ibmcloud plugin install -f kubernetes-service
           ibmcloud plugin install -f container-registry      
-    # Authenticate with IBM Cloud CLI
+
       - name: Authenticate with IBM Cloud CLI
         run: |
           ibmcloud login --apikey "${IBM_CLOUD_API_KEY}" -r "${IBM_CLOUD_REGION}" -g Blockchain-Test
           ibmcloud cr region-set "${IBM_CLOUD_REGION}"
           ibmcloud cr login
 
-      - name: BuildData
-        id: builddata
+          mkdir -p _cfg
+          ibmcloud ks cluster config --cluster ${CLUSTER_ID} 
+          ibmcloud ks cluster config --cluster ${CLUSTER_ID}  --output yaml > _cfg/k8s_context.yaml
+
+      # This might well be more sophisticated
+      # TODO: Remove duplication with the docker image upload
+      - name: Create the Configuration for the Fabric Network
         run: |
-          set -ex -o pipefail
+          cp cloud_base_cfg/*.yml _cfg/
 
-          images=($(cat ./cloud-base-cfg/imagelist))
-          echo $images
-
-          for t in "${images[@]}"; do
-              newtag=${REGISTRY_HOSTNAME}/${PROJECT_NAME}/"${t##*/}"           
-              docker pull "${t}"
-              docker tag "${t}" "${newtag}"
-              docker push "${newtag}"
-          done
-
-
+      - name: Create the Fabric CRDs/Operator
+        id: org1install
+        uses: ./fabric-ansible-action
+        with:
+          playbook: playbooks/fabric-network-playbooks/00-org1.yml

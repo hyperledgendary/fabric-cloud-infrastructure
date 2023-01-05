@@ -10,9 +10,9 @@
     organization_msp_id: "{{ org1_msp_id }}"
     ca_name: "{{ org1_ca_name }}"
     peer_name: "{{ org1_peer_name }}"
-    wallet: "/_cfg"    
+    wallet: "{{ROOT}}/_cfg"    
   vars_files:
-    - /_cfg/fabric-common-vars.yml
-    - /_cfg/fabric-org1-vars.yml
+    - "{{ROOT}}/_cfg/fabric-common-vars.yml"
+    - "{{ROOT}}/_cfg/fabric-org1-vars.yml"
   roles:
     - ibm.blockchain_platform.endorsing_organization

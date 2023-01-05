@@ -8,9 +8,10 @@
     state: present
     organization_name: "{{ ordering_org_name }}"
     organization_msp_id: "{{ ordering_service_msp }}"
-    wallet: "/_cfg"
+    wallet: "{{ROOT}}/_cfg"
   vars_files:
-    - /_cfg/fabric-common-vars.yml
-    - /_cfg/fabric-ordering-org-vars.yml
+    - "{{ROOT}}/_cfg/auth-vars.yml"
+    - "{{ROOT}}/_cfg/fabric-common-vars.yml"
+    - "{{ROOT}}/_cfg/fabric-ordering-org-vars.yml"
   roles:
     - ibm.blockchain_platform.ordering_organization
