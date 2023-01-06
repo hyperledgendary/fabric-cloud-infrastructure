@@ -1,0 +1,10 @@
+#!/bin/bash
+set -xev
+PLAYBOOK=$1
+
+(docker inspect gaa > /dev/null) ||docker build -t gaa -f ./fabric-ansible-action/Dockerfile ./fabric-ansible-action
+
+docker run -it --rm --network host -v "$(pwd)":/github/workspace -e GITHUB_WORKSPACE=/github/workspace gaa "${PLAYBOOK}" _cfg/domain.yml
+
+
+

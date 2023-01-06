@@ -189,3 +189,6 @@ EOF
 }
 
 kind_with_nginx
+
+mkdir -p _cfg
+kubectl config view --raw > _cfg/k8s_context.yaml
