@@ -35,11 +35,13 @@ There are workflow examples for running with a IBM IKS-VPC cluster - and also wi
 ## Cluster Configuration Steps
 
 *Prepare Configuration:*
+
 Example configurations are present for iks_vpc and kind clusters, this needs to be copied into the `${ROOT}/_cfg` directory. (in your own pipeline of course you can put these files where you wish)
 
 > All the workflows just a plain file copy of the configuration to the _cfg directory
 
 *DockerImages:*
+
 You may need to preload the docker images to a registry accesible to your cluster.
 
 > Look at the the [`001-containerimage-preload`](.github/workflows/001-containerimage-preload.yaml) pipeline
@@ -58,15 +60,7 @@ ansible-playbook -e ROOT=$(pwd) ./playbooks/operator_console_playbooks/02-consol
 ```
 
 
-## Hyperledger Fabric Consortium Creation
-
-*Creating OrganizationOne:*
-
-
-
-
-
-
+---
 
 ## Local Demo Scenario
 
@@ -74,7 +68,7 @@ ansible-playbook -e ROOT=$(pwd) ./playbooks/operator_console_playbooks/02-consol
 
 ```
 ./scripts/kind_with_nginx.sh
-kubectl config view --raw > _cfg/k8s_context.yaml
+
 
 ```
 
