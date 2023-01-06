@@ -41,7 +41,6 @@ jobs:
           ibmcloud ks cluster config --cluster ${CLUSTER_ID}  --output yaml > _cfg/k8s_context.yaml
 
       # This might well be more sophisticated
-      # TODO: Remove duplication with the docker image upload
       - name: Create the Configuration for the Fabric Network
         run: |
           cp cloud_base_cfg/operator-console-vars.yml _cfg/

@@ -15,6 +15,8 @@ export HOME=/home/ibp-user
 
 export KUBECONFIG="${GITHUB_WORKSPACE}/_cfg/k8s_context.yaml"
 
+export IBP_ANSIBLE_LOG_FILENAME=${GITHUB_WORKSPACE}/_cfg/__ansible.log
+
 if [[ $ARGSFILE == "none" ]]; then
     ansible-playbook -e ROOT=${GITHUB_WORKSPACE} ${GITHUB_WORKSPACE}/${INPUT_PLAYBOOK}
 else

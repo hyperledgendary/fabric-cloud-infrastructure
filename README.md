@@ -51,13 +51,12 @@ You may need to preload the docker images to a registry accesible to your cluste
 The CRDs and Fabric Operator needs to be installed once per cluster; the console is often installed
 at the same time - and at the moment is needed for the rest of the Ansible playbooks (for the moment!)
 
-> Look at the [`002-crds-operator`](.github/workflows/002-crds-operator.yaml) pipeline
+Run these playbooks
 
-> To run locally: 
-```
-ansible-playbook -e ROOT=$(pwd) ./playbooks/operator_console_playbooks/01-operator-install.yml
-ansible-playbook -e ROOT=$(pwd) ./playbooks/operator_console_playbooks/02-console-install.yml
-```
+- playbooks/operator_console_playbooks/01-operator-install.yml
+- playbooks/operator_console_playbooks/02-console-install.yml
+
+> Look at the [`002-crds-operator`](.github/workflows/002-crds-operator.yaml) pipeline
 
 
 ---
@@ -68,8 +67,6 @@ ansible-playbook -e ROOT=$(pwd) ./playbooks/operator_console_playbooks/02-consol
 
 ```
 ./scripts/kind_with_nginx.sh
-
-
 ```
 
 **Copy the configuration**
@@ -82,18 +79,9 @@ echo "console_domain: localho.st" >> _cfg/domain.yml
 
 **Run the playbooks**
 
-Easiest way to do this is the same way as the github action does, first build the docker container as the GHA does
+Easiest way to do this is the same way as the github action does; this can be simplified with a short shell script
 
 ```
-cd fabric-ansible-action
-docker build -t gaa .
+./runpb playbooks/operator_console_playbooks/01-operator-install.yml
 ```
-
-Each playbook can now be run like this:
-
-```
-docker run -it --network host -v $(pwd):/github/workspace -e GITHUB_WORKSPACE=/github/workspace gaa <PLAYBOOKS HERE>
-```
-
-```.runpb 
 
