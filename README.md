@@ -66,15 +66,13 @@ Run these playbooks
 **Start KIND**
 
 ```
-./scripts/kind_with_nginx.sh
+just kind
 ```
 
 **Copy the configuration**
 
 ```
-find ./architecture -name "*.yml" -exec cp {} _cfg \;
-mv _cfg/operator-console-kind-vars.yml _cfg/operator-console-vars.yml
-echo "console_domain: localho.st" >> _cfg/domain.yml
+just sail
 ```
 
 **Run the playbooks**
@@ -82,6 +80,8 @@ echo "console_domain: localho.st" >> _cfg/domain.yml
 Easiest way to do this is the same way as the github action does; this can be simplified with a short shell script
 
 ```
-./runpb playbooks/operator_console_playbooks/01-operator-install.yml
+just runpb ./playbooks/operator_console_playbooks/01-operator-install.yml
+just runpb ./playbooks/operator_console_playbooks/02-console-install.yml
+just runpb ./playbooks/fabric_network_playbooks/00-org1.yml
 ```
 
