@@ -16,13 +16,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Create k8s Kind Cluster
+        uses: helm/kind-action@v1.4.0
+        with:
+          install_only: true      
       - name: Setup and create the KIND cluster
         run: |
           set -xev
 
           # determine the IP Address of the Host running this
           export KIND_API_SERVER_ADDRESS=$(sh .github/scripts/get-host-ip.sh)
-         
+
           # Start KIND with correct configuration and the API port exposed on the above Address
           # defaults to local host otherwise
           ./scripts/kind_with_nginx.sh

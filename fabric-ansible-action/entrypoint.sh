@@ -9,6 +9,10 @@ export ARGSFILE=${2:-none}
 echo $INPUT_PLAYBOOK
 echo $ARGSFILE
 
+echo $GITHUB_WORKSPACE
+whoami
+pwd
+
 export PYTHONPATH=/home/ibp-user/.local/lib/python3.9/site-packages
 export HOME=/home/ibp-user
 # cd ${HOME}

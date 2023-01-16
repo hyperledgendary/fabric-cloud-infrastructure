@@ -1,0 +1,21 @@
+---
+- hosts: localhost
+  vars_files: 
+    - "{{ROOT}}/_cfg/auth-vars.yml"
+    - "{{ROOT}}/_cfg/fabric-common-vars.yml"
+    - "{{ROOT}}/_cfg/fabric-org1-vars.yml"
+  tasks:
+    - name: Get the ordering service information
+      ibm.blockchain_platform.ordering_service_info:
+        api_endpoint: "{{ api_endpoint }}"
+        api_authtype: "{{ api_authtype }}"
+        api_key: "{{ api_key }}"
+        api_secret: "{{ api_secret | default(omit) }}"
+        api_token_endpoint: "{{ api_token_endpoint | default(omit) }}"
+        name: "{{ ordering_service_name }}"
+      register: ordering_service
+
+    - name: Fail if the ordering service does not exist
+      debug:
+        msg: "{{ ordering_service }}"
+      
