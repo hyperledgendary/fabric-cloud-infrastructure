@@ -28,7 +28,8 @@ jobs:
           ibmcloud --version
           ibmcloud config --check-version=false
           ibmcloud plugin install -f kubernetes-service
-          ibmcloud plugin install -f container-registry      
+          ibmcloud plugin install -f container-registry    
+          ibmcloud plugin install -f secrets-manager  
 
       - name: Authenticate with IBM Cloud CLI
         run: |
@@ -58,3 +59,29 @@ jobs:
         uses: ./fabric-ansible-action
         with:
           playbook: playbooks/operator_console_playbooks/02-console-install.yml
+
+      # Upload the created API Secret Information to secure location
+      - name: Upload the Console API Key
+        run: |
+          #!/bin/bash
+          set -ex
+          export SECRETS_MANAGER_URL=https://${INSTANCE_ID}.eu-gb.secrets-manager.appdomain.cloud
+
+          # get the yaml file load with the config needed, base64 encode without wrapping
+          export AUTH_DATA=$(cat _cfg/auth-vars.yml | base64 --wrap=0)
+
+          # Create the template JSON - note the AUTH_DATA is expanded without the need for envsubst
+          export RESOURCE=$(cat << EOF
+          [{"name": "consolelogin", "secret_group_id": "baab90f3-f253-43a2-4515-86dea899e3c9", "payload": "${AUTH_DATA}"}]
+          EOF
+          )
+
+          ibmcloud secrets-manager secret-create   \
+              --secret-type=arbitrary \
+              --resources="${RESOURCE}"
+
+          # Prove this can come back with something like this
+          # ibmcloud secrets-manager secret --secret-type "arbitrary" --id "76799bc3-2958-50c0-8e46-e4ad60958ae7" --output json |  jq -r '.resources[0].secret_data.payload' | base64 --decode
+
+        env:
+          INSTANCE_ID: ${{ secrets.SECRET_MGR_INSTANCE_ID }}
