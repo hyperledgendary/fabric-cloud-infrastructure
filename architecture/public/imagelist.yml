@@ -2,8 +2,6 @@ ghcr.io/hyperledger-labs/fabric-operator:4b222fe-amd64
 ghcr.io/ibm-blockchain/fabric-deployer:latest-amd64
 ghcr.io/hyperledger-labs/fabric-operator:4b222fe-amd64
 ghcr.io/ibm-blockchain/fabric-deployer:latest-amd64
-ghcr.io/hyperledger-labs/fabric-console:latest-amd64
-ghcr.io/hyperledger-labs/fabric-console:latest
 ghcr.io/hyperledger-labs/fabric-console:latest
 couchdb:3.2.1
 hyperledger/fabric-ca:1.5.5

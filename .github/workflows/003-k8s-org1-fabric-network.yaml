@@ -1,7 +1,7 @@
 # Copyright the Hyperledger Fabric contributors. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-name: 002-crds-operator
+name: 003-k8s-org1-fabric-network.yaml
 
 on:
   create:
@@ -9,6 +9,7 @@ on:
       - "*"      
   workflow_dispatch:
 
+# Adjust these variables to loginto your own cloucd/cluster
 env:
   GITHUB_SHA: ${{ github.sha }}
   IBM_CLOUD_API_KEY: ${{ secrets.IBM_CLOUD_API_KEY }}
@@ -22,6 +23,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Create local config directory
+        run : |
+          mkdir -p _cfg
+
+      # ----------------------------------------------------------------------------------------------------
+      # Adjust these steps to loginto your own cloud/cluster
       - name: Install IBM Cloud CLI
         run: |
           curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
@@ -36,23 +43,21 @@ jobs:
           ibmcloud cr region-set "${IBM_CLOUD_REGION}"
           ibmcloud cr login
 
-          mkdir -p _cfg
+      
           ibmcloud ks cluster config --cluster ${CLUSTER_ID} 
           ibmcloud ks cluster config --cluster ${CLUSTER_ID}  --output yaml > _cfg/k8s_context.yaml
+      # ----------------------------------------------------------------------------------------------------
 
       # This might well be more sophisticated
+      # TODO: Remove duplication with the docker image upload
       - name: Create the Configuration for the Fabric Network
         run: |
-          cp cloud_base_cfg/operator-console-vars.yml _cfg/
+          find architecture -name "*.yml" -exec cp {} _cfg \;
+          mv _cfg/operator-console-iks-vpc-vars.yml _cfg/operator-console-vars.yml
+   
 
-      - name: Create the Fabric CRDs/Operator
-        id: operatorinstall
+      - name: Process the Playbooks for Organization 1
+        id: org1install
         uses: ./fabric-ansible-action
         with:
-          playbook: playbooks/operator_console_playbooks/01-operator-install.yml
-
-      - name: Create the Fabric Operations Console
-        id: consoleinstall
-        uses: ./fabric-ansible-action
-        with:
-          playbook: playbooks/operator_console_playbooks/02-console-install.yml
+          playbook: playbooks/fabric-network-playbooks/00-org1.yml
