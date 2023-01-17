@@ -5,8 +5,9 @@
 - name: Join the channel
   hosts: localhost
   vars: 
-    wallet: "/_cfg"
+    wallet: "{{ROOT}}/_cfg"
   vars_files:
+    - "{{ROOT}}/_cfg/auth-vars.yml"
     - "{{ROOT}}/_cfg/fabric-common-vars.yml"
     - "{{ROOT}}/_cfg/fabric-org1-vars.yml"
   tasks:

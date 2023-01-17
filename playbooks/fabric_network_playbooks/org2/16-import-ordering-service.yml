@@ -5,6 +5,7 @@
 - name: Import the ordering service
   hosts: localhost
   vars_files:
+    - "{{ROOT}}/_cfg/auth-vars.yml"    
     - "{{ROOT}}/_cfg/fabric-common-vars.yml"
     - "{{ROOT}}/_cfg/fabric-org2-vars.yml"
   tasks:

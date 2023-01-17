@@ -39,7 +39,7 @@ kind:
     set -ex -o pipefail
 
     rm -rf {{CWDIR}}/_cfg && mkdir -p {{CWDIR}}/_cfg
-    {{CWDIR}}/scripts/kind_with_nginx.sh
+    {{CWDIR}}/.github/scripts/kind_with_nginx.sh
 
 # Shut down the KIND cluster
 unkind:

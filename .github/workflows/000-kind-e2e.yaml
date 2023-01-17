@@ -29,7 +29,7 @@ jobs:
 
           # Start KIND with correct configuration and the API port exposed on the above Address
           # defaults to local host otherwise
-          ./scripts/kind_with_nginx.sh
+          .github/scripts/kind_with_nginx.sh
 
           # export the kubeconfig (and make sure the api server address is correct)
           mkdir -p _cfg

@@ -36,12 +36,9 @@ Remember you'll need to have some clusters created and already ready to go. You'
 
 There are workflow examples for running with a IBM IKS-VPC cluster - and also with KIND. With KIND you can run this locally on your own laptop. The KIND cluster is also run on PR runs of this repo itself.
 
+---
+
 # The Workflows
-
-*Prepare Configuration:*
-
-Example configurations are present for `iks_vpc` and `kind` clusters, this needs to be copied into the `${ROOT}/_cfg` directory. (in your own pipeline of course you can put these files where you wish)
-
 ## Uploading Docker Images to the cluster
 
 You may need to preload the docker images to a registry accesible to your cluster;  this workflow uses a list of image names to load up to the cluster.
@@ -68,27 +65,17 @@ The playbook `playbooks/operator_console_playbooks/01-operator-install.yml` will
 Similarly the `playbooks/operator_console_playbooks/02-console-install.yml` playbook setups the Fabric Operations Console.
 
 
-
-
 ---
 
 ## Local Demo Scenario
 
-**Start KIND**
+| just command            | action                     |
+|-------------------------|----------------------------|
+| `just kind`             | Start local KIND cluster   |
+| `just sail`             | Create the configuration   |
+| `just runpb <playbook>` | Run the specified playbook |
 
-```
-just kind
-```
-
-**Copy the configuration**
-
-```
-just sail
-```
-
-**Run the playbooks**
-
-Easiest way to do this is the same way as the github action does; this can be simplified with a short shell script
+The playbooks you can run are:
 
 ```
 just runpb ./playbooks/operator_console_playbooks/01-operator-install.yml

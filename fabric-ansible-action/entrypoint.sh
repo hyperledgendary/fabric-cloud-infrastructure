@@ -24,5 +24,5 @@ export IBP_ANSIBLE_LOG_FILENAME=${GITHUB_WORKSPACE}/_cfg/__ansible.log
 if [[ $ARGSFILE == "none" ]]; then
     ansible-playbook -e ROOT=${GITHUB_WORKSPACE} ${GITHUB_WORKSPACE}/${INPUT_PLAYBOOK}
 else
-    ansible-playbook -e ROOT=${GITHUB_WORKSPACE} --extra-vars "@${GITHUB_WORKSPACE}/${ARGSFILE}" ${GITHUB_WORKSPACE}/${INPUT_PLAYBOOK} -vvv
+    ansible-playbook -e ROOT=${GITHUB_WORKSPACE} --extra-vars "@${GITHUB_WORKSPACE}/${ARGSFILE}" ${GITHUB_WORKSPACE}/${INPUT_PLAYBOOK} 
 fi

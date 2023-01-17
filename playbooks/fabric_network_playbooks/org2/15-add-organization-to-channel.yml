@@ -2,13 +2,14 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 ---
-- name: Add the anchor peer to the channel
+- name: Add the organization to the channel
   hosts: localhost
-  vars:
-    wallet: "/_cfg"
+  vars: 
+    wallet: "{{ROOT}}/_cfg"
   vars_files:
+    - "{{ROOT}}/_cfg/auth-vars.yml"    
     - "{{ROOT}}/_cfg/fabric-common-vars.yml"
-    - "{{ROOT}}/_cfg/fabric-org2-vars.yml"
+    - "{{ROOT}}/_cfg/fabric-org1-vars.yml"
   tasks:
     - name: Get the ordering service information
       ibm.blockchain_platform.ordering_service_info:
@@ -33,8 +34,8 @@
         api_secret: "{{ api_secret | default(omit) }}"
         api_token_endpoint: "{{ api_token_endpoint | default(omit) }}"
         ordering_service: "{{ ordering_service_name }}"
-        identity: "{{ wallet }}/{{ org2_name }} Admin.json"
-        msp_id: "{{ org2_msp_id }}"
+        identity: "{{ wallet }}/{{ org1_name }} Admin.json"
+        msp_id: "{{ org1_msp_id }}"
         operation: fetch
         name: "{{ channel_name }}"
         path: original_config.bin
@@ -44,7 +45,7 @@
         src: original_config.bin
         dest: updated_config.bin
 
-    - name: Update the organization
+    - name: Add the organization to the channel
       ibm.blockchain_platform.channel_member:
         state: present
         api_endpoint: "{{ api_endpoint }}"
@@ -53,9 +54,42 @@
         api_secret: "{{ api_secret | default(omit) }}"
         api_token_endpoint: "{{ api_token_endpoint | default(omit) }}"
         organization: "{{ org2_name }}"
-        anchor_peers:
-          - "{{ org2_peer_name }}"
         path: updated_config.bin
+
+    - name: Update the channel admins policy
+      ibm.blockchain_platform.channel_policy:
+        state: present
+        path: updated_config.bin
+        name: Admins
+        policy: "{{ lookup('template', '15-admins-policy.json.j2') }}"
+
+    - name: Update the channel readers policy
+      ibm.blockchain_platform.channel_policy:
+        state: present
+        path: updated_config.bin
+        name: Readers
+        policy: "{{ lookup('template', '15-readers-policy.json.j2') }}"
+
+    - name: Update the channel writers policy
+      ibm.blockchain_platform.channel_policy:
+        state: present
+        path: updated_config.bin
+        name: Writers
+        policy: "{{ lookup('template', '15-writers-policy.json.j2') }}"
+
+    - name: Update the channel endorsement policy
+      ibm.blockchain_platform.channel_policy:
+        state: present
+        path: updated_config.bin
+        name: Endorsement
+        policy: "{{ lookup('template', '15-endorsement-policy.json.j2') }}"
+
+    - name: Update the channel lifecycle endorsement policy
+      ibm.blockchain_platform.channel_policy:
+        state: present
+        path: updated_config.bin
+        name: LifecycleEndorsement
+        policy: "{{ lookup('template', '15-lifecycle-endorsement-policy.json.j2') }}"
 
     - name: Compute the channel configuration update
       ibm.blockchain_platform.channel_config:
@@ -69,8 +103,8 @@
     - name: Sign the channel configuration update
       ibm.blockchain_platform.channel_config:
         operation: sign_update
-        identity: "{{ wallet }}/{{ org2_name }} Admin.json"
-        msp_id: "{{ org2_msp_id }}"
+        identity: "{{ wallet }}/{{ org1_name }} Admin.json"
+        msp_id: "{{ org1_msp_id }}"
         name: "{{ channel_name }}"
         path: config_update.bin
       when: compute_update.path
@@ -84,8 +118,8 @@
         api_token_endpoint: "{{ api_token_endpoint | default(omit) }}"
         operation: apply_update
         ordering_service: "{{ ordering_service_name }}"
-        identity: "{{ wallet }}/{{ org2_name }} Admin.json"
-        msp_id: "{{ org2_msp_id }}"
+        identity: "{{ wallet }}/{{ org1_name }} Admin.json"
+        msp_id: "{{ org1_msp_id }}"
         name: "{{ channel_name }}"
         path: config_update.bin
       when: compute_update.path

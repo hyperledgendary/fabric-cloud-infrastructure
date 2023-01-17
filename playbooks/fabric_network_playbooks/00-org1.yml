@@ -6,12 +6,12 @@
     - ansible.builtin.debug:
         msg: "Running complete Fabric network build {{ api_endpoint }} "
 
-- ansible.builtin.import_playbook: 01-create-ordering-organization-components.yml
-- ansible.builtin.import_playbook: 02-create-endorsing-organization-components.yml
-- ansible.builtin.import_playbook: 05-enable-capabilities.yml
-- ansible.builtin.import_playbook: 06-add-organization-to-consortium.yml
-- ansible.builtin.import_playbook: 09-create-channel.yml
-- ansible.builtin.import_playbook: 10-join-peer-to-channel.yml
-- ansible.builtin.import_playbook: 11-add-anchor-peer-to-channel.yml
+- ansible.builtin.import_playbook: org1/01-create-ordering-organization-components.yml
+- ansible.builtin.import_playbook: org1/02-create-endorsing-organization-components.yml
+- ansible.builtin.import_playbook: org1/05-enable-capabilities.yml
+- ansible.builtin.import_playbook: org1/06-add-organization-to-consortium.yml
+- ansible.builtin.import_playbook: org1/09-create-channel.yml
+- ansible.builtin.import_playbook: org1/10-join-peer-to-channel.yml
+- ansible.builtin.import_playbook: org1/11-add-anchor-peer-to-channel.yml
 
 

@@ -1,0 +1,14 @@
+---
+- hosts: localhost
+  vars_files: 
+    - "{{ROOT}}/_cfg/auth-vars.yml"
+  tasks:
+    - ansible.builtin.debug:
+        msg: "Running complete Fabric network build {{ api_endpoint }} "
+
+- ansible.builtin.import_playbook: org2/12-create-endorsing-organization-components.yml
+- ansible.builtin.import_playbook: org2/15-add-organization-to-channel.yml
+- ansible.builtin.import_playbook: org2/17-join-peer-to-channel.yml
+- ansible.builtin.import_playbook: org2/18-add-anchor-peer-to-channel.yml
+
+

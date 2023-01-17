@@ -2,11 +2,12 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 ---
-- name: Enable Fabric v2.x capabilities
+- name: Add the organization to the consortium
   hosts: localhost
-  vars:
+  vars: 
     wallet: "{{ROOT}}/_cfg"
   vars_files:
+    - "{{ROOT}}/_cfg/auth-vars.yml"
     - "{{ROOT}}/_cfg/fabric-common-vars.yml"
     - "{{ROOT}}/_cfg/fabric-ordering-org-vars.yml"
   tasks:
@@ -44,11 +45,16 @@
         src: original_config.bin
         dest: updated_config.bin
 
-    - name: Enable Fabric v2.x capabilities
-      ibm.blockchain_platform.channel_capabilities:
+    - name: Add the organization to the consortium
+      ibm.blockchain_platform.consortium_member:
+        state: present
+        api_endpoint: "{{ api_endpoint }}"
+        api_authtype: "{{ api_authtype }}"
+        api_key: "{{ api_key }}"
+        api_secret: "{{ api_secret | default(omit) }}"
+        api_token_endpoint: "{{ api_token_endpoint | default(omit) }}"
+        organization: "{{ org1_name }}"
         path: updated_config.bin
-        channel: V2_0
-        orderer: V2_0
 
     - name: Compute the system channel configuration update
       ibm.blockchain_platform.channel_config:

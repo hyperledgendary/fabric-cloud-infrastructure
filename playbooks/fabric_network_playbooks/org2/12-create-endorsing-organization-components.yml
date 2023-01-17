@@ -12,6 +12,7 @@
     peer_name: "{{ org2_peer_name }}"
     wallet: "{{ROOT}}/_cfg"
   vars_files:
+    - "{{ROOT}}/_cfg/auth-vars.yml"    
     - "{{ROOT}}/_cfg/fabric-common-vars.yml"
     - "{{ROOT}}/_cfg/fabric-org2-vars.yml"
   roles:
