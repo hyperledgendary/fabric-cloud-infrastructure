@@ -52,13 +52,13 @@ unkind:
         docker rm kind-registry
     fi
 
-sail:
+sail target="kind":
     #!/bin/bash
     set -ex -o pipefail
 
 
     find {{CWDIR}}/architecture -name "*.yml" -exec cp {} {{CWDIR}}/_cfg \;
-    mv {{CWDIR}}/_cfg/operator-console-kind-vars.yml {{CWDIR}}/_cfg/operator-console-vars.yml
+    mv {{CWDIR}}/_cfg/operator-console-{{target}}-vars.yml {{CWDIR}}/_cfg/operator-console-vars.yml
     echo "console_domain: localho.st" >> {{CWDIR}}/_cfg/domain.yml
 
 # Creates a new identity for an application to use

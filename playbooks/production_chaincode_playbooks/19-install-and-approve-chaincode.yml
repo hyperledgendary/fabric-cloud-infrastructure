@@ -5,12 +5,12 @@
 - name: Install and approve chaincode
   hosts: localhost
   vars:
-    wallet: "/_cfg"
+    wallet: "{{ROOT}}/_cfg"
   vars_files:
-    - /_cfg/asset-transfer-chaincode-vars.yml
-    - /_cfg/fabric-common-vars.yml
-    - /_cfg/fabric-org1-vars.yml
-    - /_cfg/auth-vars.yml
+    - "{{ROOT}}/_cfg/asset-transfer-chaincode-vars.yml"
+    - "{{ROOT}}/_cfg/fabric-common-vars.yml"
+    - "{{ROOT}}/_cfg/fabric-org1-vars.yml"
+    - "{{ROOT}}/_cfg/auth-vars.yml"
   tasks:
     - name: Install the chaincode on the peer
       ibm.blockchain_platform.installed_chaincode:

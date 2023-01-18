@@ -78,10 +78,11 @@ jobs:
 
           ibmcloud secrets-manager secret-create   \
               --secret-type=arbitrary \
-              --resources="${RESOURCE}"
+              --resources="${RESOURCE}" \
+              --output=json 
 
-          # Prove this can come back with something like this
-          # ibmcloud secrets-manager secret --secret-type "arbitrary" --id "76799bc3-2958-50c0-8e46-e4ad60958ae7" --output json |  jq -r '.resources[0].secret_data.payload' | base64 --decode
+          export SECRET_ID=$(ibmcloud secrets-manager secrets --secret-type=arbitrary --output json | jq -r '.resources[] | select(.name=="consolelogin").id')
+          ibmcloud secrets-manager secret --secret-type "arbitrary" --id ${SECRET_ID} --output json |  jq -r '.resources[0].secret_data.payload' | base64 --decode    
 
         env:
           INSTANCE_ID: ${{ secrets.SECRET_MGR_INSTANCE_ID }}
