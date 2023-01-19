@@ -18,6 +18,9 @@ namespace: test-network
 console_name: hlf-console
 console: hlf-console
 
+image_registry_email: not_needed
+image_registry_password: wibble
+image_registry_url: ""
 
 #  default configuration for the console
 # password reset will be required on first login
@@ -42,25 +45,25 @@ orderer_image: "{{ fabric_container_registry }}/{{ fabric_cr_namespace}}/ibm-hlf
 orderer_image_label: "2.4.7-20230104-amd64"
 tools_image: "{{ fabric_container_registry }}/{{ fabric_cr_namespace}}/ibm-hlfsupport-utilities"
 tools_image_label: "2.4.7-20230104-amd64"
-
+                                                 
 operator_image: "{{ fabric_container_registry }}/ibm-hlfsupport-operator"
-operator_image_label: 1.0.4-20230104-amd64
+operator_tag: "1.0.4-20230104-amd64"
+
 
 init_image: "{{ fabric_container_registry }}/{{ fabric_cr_namespace}}/ibm-hlfsupport-init"
 init_image_label: 1.0.4-20230104-amd64
 
-grpcweb_image: "{{ fabric_container_registry }}/{{ fabric_cr_namespace}}/ibm-hlfsupport-grpcweb"
+grpcweb_image: "{{ fabric_container_registry }}/{{ fabric_cr_namespace }}/ibm-hlfsupport-grpcweb"
 grpcweb_image_label: 1.0.4-20230104-amd64
 
-couchdb_image: "{{ fabric_container_registry }}/{{ fabric_cr_namespace}}/ibm-hlfsupport-couchdb"
+couchdb_image: "{{ fabric_container_registry }}/{{ fabric_cr_namespace }}/ibm-hlfsupport-couchdb"
 couchdb_image_label: 3.2.2-20230104-amd64
 
-console_image: "{{ fabric_container_registry }}/ibm-hlfsupport-console"
+console_image: "{{ fabric_container_registry }}/{{ fabric_cr_namespace }}/ibm-hlfsupport-console"
 console_image_label: 1.0.4-20230104-amd64
-deployer_image: "{{ fabric_container_registry }}/ibm-hlfsupport-deployer"
+deployer_image: "{{ fabric_container_registry }}/{{ fabric_cr_namespace }}/ibm-hlfsupport-deployer"
 deployer_image_label: 1.0.4-20230104-amd64
 
-fabric_operator_image: "{{ operator_image }}:{{ operator_image_label }}"
 fabric_console_image: "{{ console_image }}:{{ console_image_label }}"
 fabric_deployer_image: "{{ deployer_image }}:{{ deployer_image_label }}"
 fabric_ca_image: "{{ ca_image }}:{{ ca_image_label }}"
@@ -68,8 +71,8 @@ fabric_peer_image: "{{ peer_image }}:{{ peer_image_label }}"
 fabric_orderer_image: "{{ orderer_image }}:{{ orderer_image_label }}"
 fabric_tools_image: "{{ tools_image }}:{{ tools_image_label }}"
 
-webhook_image: "{{ image_registry_url }}/ibm-hlfsupport-crdwebhook"
-webhook_tag: "{{ product_version }}-{{ webhook_version }}-{{ arch }}"
+webhook_image: "{{ fabric_container_registry }}/ibm-hlfsupport-crdwebhook"
+webhook_tag: "1.0.4-20230104-amd64"
 
 # image_pull_secret: all-icr-io
 

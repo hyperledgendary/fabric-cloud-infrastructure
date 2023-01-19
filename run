@@ -1,0 +1,5 @@
+#!/bin/bash
+set -xe
+just sail hlfsupport-kind
+just runpb playbooks/hlfsupport_operator_console_playbooks/01-operator-install.yml
+just runpb playbooks/hlfsupport_operator_console_playbooks/02-console-install.yml

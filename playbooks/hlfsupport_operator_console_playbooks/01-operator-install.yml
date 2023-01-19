@@ -11,7 +11,6 @@
     state: present
     kubeconfig: "{{ROOT}}/_cfg/k8s_context.yaml"
     wait_timeout: 3600
-    image_registry_email: not_needed
-    image_registry_password: wibble
+
   roles:
     - ibm.blockchain_platform.hlfsupport_crds
