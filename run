@@ -1,5 +1,9 @@
 #!/bin/bash
 set -xe
+
+rm -f _cfg && mkdir -p _cfg
+just kind
 just sail hlfsupport-kind
 just runpb playbooks/hlfsupport_operator_console_playbooks/01-operator-install.yml
 just runpb playbooks/hlfsupport_operator_console_playbooks/02-console-install.yml
+just runpb playbooks/fabric_network_playbooks/00-org1.yml

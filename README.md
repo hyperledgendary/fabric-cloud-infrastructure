@@ -66,20 +66,33 @@ Similarly the `playbooks/operator_console_playbooks/02-console-install.yml` play
 
 
 ---
-
 ## Local Demo Scenario
 
-| just command            | action                     |
-|-------------------------|----------------------------|
-| `just kind`             | Start local KIND cluster   |
-| `just sail`             | Create the configuration   |
-| `just runpb <playbook>` | Run the specified playbook |
+| just command            | action                                          |
+|-------------------------|-------------------------------------------------|
+| `just kind`             | Start local KIND cluster                        |
+| `just sail [<target>]`  | Create the configurationm with optional target. |
+| `just runpb <playbook>` | Run the specified playbook                      |
 
-The playbooks you can run are:
+Default configuration is use the `just sail kind` target for running locally in KIND with the OpenSource components
+`just sail hlfsupport-kind` will run in KIND but with the IBM HLF Support Images
+
+For OpenSource Stack the playbooks you can run are:
 
 ```
 just runpb ./playbooks/operator_console_playbooks/01-operator-install.yml
 just runpb ./playbooks/operator_console_playbooks/02-console-install.yml
+```
+
+For the IBM HLF Support the playbooks you should run are:
+```
+just runpb playbooks/hlfsupport_operator_console_playbooks/01-operator-install.yml
+just runpb playbooks/hlfsupport_operator_console_playbooks/02-console-install.yml
+```
+
+After that you can run the Fabric Network playbooks
+
+```
 just runpb ./playbooks/fabric_network_playbooks/00-org1.yml
 ```
 

@@ -40,7 +40,7 @@ ca_image_label: "1.5.5-20230104-amd64"
 
 
 peer_image: "{{ fabric_container_registry }}/{{ fabric_cr_namespace}}/ibm-hlfsupport-peer"
-peer_image_label: "2.2.9-20230104-amd64"
+peer_image_label: "2.4.7-20230104-amd64"
 orderer_image: "{{ fabric_container_registry }}/{{ fabric_cr_namespace}}/ibm-hlfsupport-orderer"
 orderer_image_label: "2.4.7-20230104-amd64"
 tools_image: "{{ fabric_container_registry }}/{{ fabric_cr_namespace}}/ibm-hlfsupport-utilities"
@@ -97,7 +97,7 @@ console_versions:
         peerImage: "{{peer_image}}"
         peerTag: "{{peer_image_label}}"
         couchdbImage: "{{couchdb_image}}"
-        couchdbTag: "{{console_image_label}}"
+        couchdbTag: "{{couchdb_image_label}}"
         grpcwebImage: "{{grpcweb_image}}"
         grpcwebTag: "{{grpcweb_image_label}}"
   orderer:
