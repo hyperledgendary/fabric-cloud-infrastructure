@@ -35,8 +35,8 @@ ca_image: "{{ fabric_container_registry }}/fabric-ca"
 ca_image_label: "1.5.5"
 
 
-peer_image: ghcr.io/hyperledger-labs/k8s-fabric-peer
-peer_image_label: "v0.8.0"
+peer_image: ghcr.io/hyperledger-labs/fabric-builder-k8s/k8s-fabric-peer
+peer_image_label: "0.10.0"
 orderer_image: "{{ fabric_container_registry }}/fabric-orderer"
 orderer_image_label: "{{ fabric_version }}"
 tools_image: "{{ fabric_container_registry }}/fabric-tools"

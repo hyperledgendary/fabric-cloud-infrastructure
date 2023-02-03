@@ -55,7 +55,7 @@ The 'Ansible Action' is invoked like this
 ```
       - name: Create the Fabric CRDs/Operator
         id: operatorinstall
-        uses: ./fabric-ansible-action
+        uses: hyperledgendary/fabric-ansible-action:v0.0.1
         with:
           playbook: playbooks/operator_console_playbooks/01-operator-install.yml
 ```
@@ -94,5 +94,6 @@ After that you can run the Fabric Network playbooks
 
 ```
 just runpb ./playbooks/fabric_network_playbooks/00-org1.yml
+just runpb ./playbooks/fabric_network_playbooks/01-org2.yml
 ```
 

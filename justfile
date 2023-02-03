@@ -61,6 +61,8 @@ sail target="kind":
     mv {{CWDIR}}/_cfg/operator-console-{{target}}-vars.yml {{CWDIR}}/_cfg/operator-console-vars.yml
     echo "console_domain: localho.st" >> {{CWDIR}}/_cfg/domain.yml
 
+    cp {{CWDIR}}/architecture/public/asset-transfer-basic-typescript.tgz _cfg/
+
 # Creates a new identity for an application to use
 runpb playbook:
     #!/bin/bash
@@ -69,5 +71,28 @@ runpb playbook:
     (docker inspect gaa > /dev/null) ||docker build -t gaa -f {{CWDIR}}/fabric-ansible-action/Dockerfile {{CWDIR}}/fabric-ansible-action
 
     docker run -it --rm --network host -v {{CWDIR}}:/github/workspace -e GITHUB_WORKSPACE=/github/workspace gaa {{playbook}} _cfg/domain.yml
+
+runlocal:
+    #!/bin/bash
+    set -xe
+
+    # clear out the configuration
+    rm -f _cfg && mkdir -p _cfg
+
+    # let's assume a KIND cluster running locally
+    just kind
+
+    # Get the Organizations' private configuration along with the public configuration
+    just sail
+
+
+    # install the operator and console
+    # (assuming in this case they are running in the same cluster, so this is needed just once)
+    just runpb playbooks/operator_console_playbooks/01-operator-install.yml
+    just runpb playbooks/operator_console_playbooks/02-console-install.yml
+
+    # Creat the Fabric components needed per organization
+    just runpb playbooks/fabric_network_playbooks/00-org1.yml
+    just runpb playbooks/fabric_network_playbooks/01-org2.yml
 
 

@@ -58,13 +58,27 @@ jobs:
 
       - name: Create the Fabric CRDs/Operator
         id: operatorinstall
-        uses: ./fabric-ansible-action
+        uses: hyperledgendary/fabric-ansible-action@v0.0.1
         with:
           playbook: playbooks/operator_console_playbooks/01-operator-install.yml
 
       - name: Create the Fabric Operations Console
         id: consoleinstall
-        uses: ./fabric-ansible-action
+        uses: hyperledgendary/fabric-ansible-action@v0.0.1
         with:
           playbook: playbooks/operator_console_playbooks/02-console-install.yml
           argsfile: _cfg/domain.yml
+
+      - name: Setup Org 1
+        uses: hyperledgendary/fabric-ansible-action@v0.0.1
+        with:
+          playbook: playbooks/fabric-network-playbooks/00-org1.yml
+          argsfile: _cfg/domain.yml
+
+
+      - name: Setup Org 2
+        id: consoleinstall
+        uses: hyperledgendary/fabric-ansible-action@v0.0.1
+        with:
+          playbook: playbooks/fabric-network-playbooks/00-org1.yml
+          argsfile: _cfg/domain.yml          

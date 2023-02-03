@@ -1,9 +1,32 @@
 #!/bin/bash
 set -xe
 
+
+# clear out the configuration
 rm -f _cfg && mkdir -p _cfg
+
+# let's assume a KIND cluster running locally
 just kind
-just sail hlfsupport-kind
-just runpb playbooks/hlfsupport_operator_console_playbooks/01-operator-install.yml
-just runpb playbooks/hlfsupport_operator_console_playbooks/02-console-install.yml
+
+# Get the Organizations' private configuration along with the public configuration
+just sail
+
+
+# install the operator and console
+# (assuming in this case they are running in the same cluster, so this is needed just once)
+just runpb playbooks/operator_console_playbooks/01-operator-install.yml
+just runpb playbooks/operator_console_playbooks/02-console-install.yml
+
+# Creat the Fabric components needed per organization
 just runpb playbooks/fabric_network_playbooks/00-org1.yml
+just runpb playbooks/fabric_network_playbooks/01-org2.yml
+
+# Install and Approve the Chaincode
+just runpb playbooks/production_chaincode_playbooks/01-org1-install-and-approve-chaincode.yml
+just runpb playbooks/production_chaincode_playbooks/02-org2-install-and-approve-chaincode.yml
+just runpb playbooks/production_chaincode_playbooks/03-org1-commit-chaincode.yml
+
+just runpb playbooks/production_chaincode_playbooks/04-org1-register-application.yml
+
+# just runpb playbooks/hlfsupport_operator_console_playbooks/01-operator-install.yml
+# just runpb playbooks/hlfsupport_operator_console_playbooks/02-console-install.yml

@@ -5,12 +5,12 @@
 - name: Commit chaincode
   hosts: localhost
   vars:
-    wallet: "/_cfg"
+    wallet: "{{ROOT}}/_cfg"
   vars_files:
-    - /_cfg/asset-transfer-chaincode-vars.yml
-    - /_cfg/fabric-common-vars.yml
-    - /_cfg/fabric-org1-vars.yml
-    - /_cfg/auth-vars.yml
+    - "{{ROOT}}/_cfg/asset-transfer-chaincode-private-vars.yml"
+    - "{{ROOT}}/_cfg/fabric-common-vars.yml"
+    - "{{ROOT}}/_cfg/fabric-org1-vars.yml"
+    - "{{ROOT}}/_cfg/auth-vars.yml"
   tasks:
     - name: Commit the chaincode on the channel
       ibm.blockchain_platform.committed_chaincode:
@@ -30,4 +30,4 @@
         version: "{{ smart_contract_version }}"
         sequence: "{{ smart_contract_sequence }}"
         endorsement_policy: "{{ smart_contract_endorsement_policy | default(omit) }}"
-        collections_config: "{{ smart_contract_collections_file | default(omit) }}"
+        collections_config: "{{wallet}}/{{ smart_contract_collections_file}}"

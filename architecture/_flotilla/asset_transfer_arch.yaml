@@ -1,0 +1,44 @@
+flotilla:
+  topology:
+    name: asset_transfeer
+    version: 0.0.1
+    networks:
+      - name: fabricinfra
+        type: fabric
+        scope: allorgs
+        organizations:
+          - &orderer_org_global
+            name: orderer_org
+            domain: example.com
+            orderers:
+              - name: order_svc
+                count: 3
+
+          - name: org1
+            idemix:
+              enabled: false
+            domain: example.com
+            peers:
+              - name: provider_peer1
+                anchor: true
+
+          - name: org2
+            idemix: 
+              enabled: false
+            domain: outline.com            
+            peers:
+              - name: investigator_peer1
+                anchor: true
+
+        channels:
+          - name: testchannel
+            endorsingorgs:
+              - name: org1
+                peers:
+                  - provider_peer1
+              - name: org2
+                peers:
+                  - investigator_peer1
+              - name: org3
+                peers:
+                  - provider_peer1

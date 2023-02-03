@@ -5,13 +5,18 @@
 - name: Install and approve chaincode
   hosts: localhost
   vars:
-    wallet: "/_cfg"
+    wallet: "{{ROOT}}/_cfg"
   vars_files:
-    - /_cfg/asset-transfer-chaincode-vars.yml
-    - /_cfg/fabric-common-vars.yml
-    - /_cfg/fabric-org2-vars.yml
-    - /_cfg/auth-vars.yml
+    - "{{ROOT}}/_cfg/asset-transfer-chaincode-vars.yml"
+    - "{{ROOT}}/_cfg/fabric-common-vars.yml"
+    - "{{ROOT}}/_cfg/fabric-org1-vars.yml"
+    - "{{ROOT}}/_cfg/auth-vars.yml"
   tasks:
+
+    - name: Download chaincode
+      shell: |
+        curl -sSL https://github.com/hyperledgendary/fabric-contract-workflow/releases/download/{{smart_contract_version}}/assettxts-{{smart_contract_version}}.tgz -o {{ROOT}}/_cfg/{{ smart_contract_package }}
+
     - name: Install the chaincode on the peer
       ibm.blockchain_platform.installed_chaincode:
         api_endpoint: "{{ api_endpoint }}"
@@ -19,9 +24,9 @@
         api_key: "{{ api_key }}"
         api_secret: "{{ api_secret | default(omit) }}"
         api_token_endpoint: "{{ api_token_endpoint | default(omit) }}"
-        peer: "{{ org2_peer_name }}"
-        identity: "{{ wallet }}/{{ org2_name }} Admin.json"
-        msp_id: "{{ org2_msp_id }}"
+        peer: "{{ org1_peer_name }}"
+        identity: "{{ wallet }}/{{ org1_name }} Admin.json"
+        msp_id: "{{ org1_msp_id }}"
         path: "{{ wallet }}/{{ smart_contract_package }}"
       register: result
 
@@ -32,9 +37,9 @@
         api_key: "{{ api_key }}"
         api_secret: "{{ api_secret | default(omit) }}"
         api_token_endpoint: "{{ api_token_endpoint | default(omit) }}"
-        peer: "{{ org2_peer_name }}"
-        identity: "{{ wallet }}/{{ org2_name }} Admin.json"
-        msp_id: "{{ org2_msp_id }}"
+        peer: "{{ org1_peer_name }}"
+        identity: "{{ wallet }}/{{ org1_name }} Admin.json"
+        msp_id: "{{ org1_msp_id }}"
         channel: "{{ channel_name }}"
         name: "{{ smart_contract_name }}"
         version: "{{ smart_contract_version }}"

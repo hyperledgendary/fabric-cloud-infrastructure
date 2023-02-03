@@ -1,0 +1,49 @@
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+---
+- name: Install and approve chaincode
+  hosts: localhost
+  vars:
+    wallet: "{{ROOT}}/_cfg"
+  vars_files:
+    - "{{ROOT}}/_cfg/asset-transfer-chaincode-private-vars.yml"
+    - "{{ROOT}}/_cfg/fabric-common-vars.yml"
+    - "{{ROOT}}/_cfg/fabric-org1-vars.yml"
+    - "{{ROOT}}/_cfg/auth-vars.yml"
+  tasks:
+
+    - name: Download chaincode
+      shell: |
+        curl -sSL https://github.com/hyperledgendary/fabric-contract-workflow/releases/download/v0.0.12/assettxprivate-java-v0.0.12.tgz -o {{ROOT}}/_cfg/{{ smart_contract_package }}
+
+    - name: Install the chaincode on the peer
+      ibm.blockchain_platform.installed_chaincode:
+        api_endpoint: "{{ api_endpoint }}"
+        api_authtype: "{{ api_authtype }}"
+        api_key: "{{ api_key }}"
+        api_secret: "{{ api_secret | default(omit) }}"
+        api_token_endpoint: "{{ api_token_endpoint | default(omit) }}"
+        peer: "{{ org1_peer_name }}"
+        identity: "{{ wallet }}/{{ org1_name }} Admin.json"
+        msp_id: "{{ org1_msp_id }}"
+        path: "{{ wallet }}/{{ smart_contract_package }}"
+      register: result
+
+    - name: Approve the chaincode on the channel
+      ibm.blockchain_platform.approved_chaincode:
+        api_endpoint: "{{ api_endpoint }}"
+        api_authtype: "{{ api_authtype }}"
+        api_key: "{{ api_key }}"
+        api_secret: "{{ api_secret | default(omit) }}"
+        api_token_endpoint: "{{ api_token_endpoint | default(omit) }}"
+        peer: "{{ org1_peer_name }}"
+        identity: "{{ wallet }}/{{ org1_name }} Admin.json"
+        msp_id: "{{ org1_msp_id }}"
+        channel: "{{ channel_name }}"
+        name: "{{ smart_contract_name }}"
+        version: "{{ smart_contract_version }}"
+        package_id: "{{ result.installed_chaincode.package_id }}"
+        sequence: "{{ smart_contract_sequence }}"
+        endorsement_policy: "{{ smart_contract_endorsement_policy | default(omit) }}"
+        collections_config: "{{wallet}}/{{ smart_contract_collections_file}}"
