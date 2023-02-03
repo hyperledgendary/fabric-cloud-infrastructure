@@ -35,64 +35,73 @@ _default:
   @just -f {{justfile()}} --list
 
 kind:
-    #!/bin/bash
-    set -ex -o pipefail
+	#!/bin/bash
+	set -ex -o pipefail
 
-    rm -rf {{CWDIR}}/_cfg && mkdir -p {{CWDIR}}/_cfg
-    {{CWDIR}}/.github/scripts/kind_with_nginx.sh
+	rm -rf {{CWDIR}}/_cfg && mkdir -p {{CWDIR}}/_cfg
+	{{CWDIR}}/.github/scripts/kind_with_nginx.sh
 
 # Shut down the KIND cluster
 unkind:
-    #!/bin/bash
-    kind delete cluster --name kind
+	#!/bin/bash
+	kind delete cluster --name kind
 
-    if docker inspect kind-registry &>/dev/null; then
-        echo "Stopping container registry"
-        docker kill kind-registry
-        docker rm kind-registry
-    fi
+	if docker inspect kind-registry &>/dev/null; then
+		echo "Stopping container registry"
+		docker kill kind-registry
+		docker rm kind-registry
+	fi
 
 sail target="kind":
-    #!/bin/bash
-    set -ex -o pipefail
+	#!/bin/bash
+	set -ex -o pipefail
 
 
-    find {{CWDIR}}/architecture -name "*.yml" -exec cp {} {{CWDIR}}/_cfg \;
-    mv {{CWDIR}}/_cfg/operator-console-{{target}}-vars.yml {{CWDIR}}/_cfg/operator-console-vars.yml
-    echo "console_domain: localho.st" >> {{CWDIR}}/_cfg/domain.yml
+	find {{CWDIR}}/architecture -name "*.yml" -exec cp {} {{CWDIR}}/_cfg \;
+	mv {{CWDIR}}/_cfg/operator-console-{{target}}-vars.yml {{CWDIR}}/_cfg/operator-console-vars.yml
+	echo "console_domain: localho.st" >> {{CWDIR}}/_cfg/domain.yml
 
-    cp {{CWDIR}}/architecture/public/asset-transfer-basic-typescript.tgz _cfg/
+	# cp {{CWDIR}}/architecture/public/asset-transfer-basic-typescript.tgz _cfg/
 
 # Creates a new identity for an application to use
 runpb playbook:
-    #!/bin/bash
-    set -ex -o pipefail
-    
-    (docker inspect gaa > /dev/null) ||docker build -t gaa -f {{CWDIR}}/fabric-ansible-action/Dockerfile {{CWDIR}}/fabric-ansible-action
+	#!/bin/bash
+	set -ex -o pipefail
 
-    docker run -it --rm --network host -v {{CWDIR}}:/github/workspace -e GITHUB_WORKSPACE=/github/workspace gaa {{playbook}} _cfg/domain.yml
+	create() {
+		TEMPDIR=$(mktemp -d)
+		pushd ${TEMPDIR}/fabric-ansible-action
+		git clone https://github.com/hyperledgendary/fabric-ansible-action
+		docker build -t gaa .
+		popd
+		rm -rf $TEMPDIR
+	}
+	
+	(docker inspect gaa > /dev/null) || create
+
+	docker run -it --rm --network host -v {{CWDIR}}:/github/workspace -e GITHUB_WORKSPACE=/github/workspace gaa {{playbook}} _cfg/domain.yml
 
 runlocal:
-    #!/bin/bash
-    set -xe
+	#!/bin/bash
+	set -xe
 
-    # clear out the configuration
-    rm -f _cfg && mkdir -p _cfg
+	# clear out the configuration
+	rm -f _cfg && mkdir -p _cfg
 
-    # let's assume a KIND cluster running locally
-    just kind
+	# let's assume a KIND cluster running locally
+	just kind
 
-    # Get the Organizations' private configuration along with the public configuration
-    just sail
+	# Get the Organizations' private configuration along with the public configuration
+	just sail
 
 
-    # install the operator and console
-    # (assuming in this case they are running in the same cluster, so this is needed just once)
-    just runpb playbooks/operator_console_playbooks/01-operator-install.yml
-    just runpb playbooks/operator_console_playbooks/02-console-install.yml
+	# install the operator and console
+	# (assuming in this case they are running in the same cluster, so this is needed just once)
+	just runpb playbooks/operator_console_playbooks/01-operator-install.yml
+	just runpb playbooks/operator_console_playbooks/02-console-install.yml
 
-    # Creat the Fabric components needed per organization
-    just runpb playbooks/fabric_network_playbooks/00-org1.yml
-    just runpb playbooks/fabric_network_playbooks/01-org2.yml
+	# Creat the Fabric components needed per organization
+	just runpb playbooks/fabric_network_playbooks/00-org1.yml
+	just runpb playbooks/fabric_network_playbooks/01-org2.yml
 
 

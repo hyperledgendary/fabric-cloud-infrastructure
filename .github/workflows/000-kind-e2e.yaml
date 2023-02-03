@@ -75,7 +75,6 @@ jobs:
           playbook: playbooks/fabric-network-playbooks/00-org1.yml
           argsfile: _cfg/domain.yml
 
-
       - name: Setup Org 2
         id: consoleinstall
         uses: hyperledgendary/fabric-ansible-action@v0.0.1
