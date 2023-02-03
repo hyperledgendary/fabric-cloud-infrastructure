@@ -12,5 +12,10 @@
     kubeconfig: "{{ROOT}}/_cfg/k8s_context.yaml"
     wait_timeout: 3600
 
+  pre_tasks:
+    - name: Cluster login
+      shell: |
+        oc login --token=sha256~iPuVVeCaqT71pYpZbEROFak40T3RhSrpBMHDfqtDdQA --server=https://api.puce.cp.fyre.ibm.com:6443  --insecure-skip-tls-verify
+
   roles:
     - ibm.blockchain_platform.hlfsupport_crds

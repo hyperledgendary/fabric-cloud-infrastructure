@@ -29,7 +29,7 @@ console_default_password: password
 
 # different k8s clusters will be shipped with differently named default storage providers
 # or none at all.  KIND for example has one called 'standard'
-console_storage_class: standard
+console_storage_class: rook-cephfs
 
 
 fabric_container_registry: icr.io/cpopen

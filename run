@@ -28,5 +28,3 @@ just runpb playbooks/production_chaincode_playbooks/03-org1-commit-chaincode.yml
 
 just runpb playbooks/production_chaincode_playbooks/04-org1-register-application.yml
 
-# just runpb playbooks/hlfsupport_operator_console_playbooks/01-operator-install.yml
-# just runpb playbooks/hlfsupport_operator_console_playbooks/02-console-install.yml

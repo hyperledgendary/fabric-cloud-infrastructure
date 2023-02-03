@@ -1,16 +1,67 @@
 ---
-- hosts: localhost
-  vars_files: 
+- name: Demo playbook
+  hosts: localhost
+  vars_files:
     - "{{ROOT}}/_cfg/operator-console-vars.yml"
   tasks:
-    - ansible.builtin.debug:
-        msg: "Hello {{namespace}}"
+    # built in tasks
+    - name: Confirm namespace
+      ansible.builtin.debug:
+        msg: "Hello {{ namespace }}"
+
+    # external tasks
     - name: Get a list of all pods from any namespace
       kubernetes.core.k8s_info:
-        kind: Pod
-        namespace: fabricinfra
+        kind: pod
+        hotel: details
       register: pod_list
-    - ansible.builtin.debug:
-        msg: "{{pod_list}}"
 
-    
+    - name: Create peer
+      ibm.blockchain_platform.peer:
+        state: onholiday
+        api_endpoint: https://ibp-console.example.org:32000
+        api_authtype: basic
+        api_key: xxxxxxxx
+        api_secret: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+        name: Org1 Peer
+        msp_id: Org1MSP
+        certificate_authority: Org1 CA
+        enrollment_id: org1peer
+        enrollment_secret: org1peerpw
+        admin_certificates:
+          - LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0t...
+
+    - name: Create pod
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Pod
+          metadata:
+            name: pod1
+            namespace: "{{ namespace }}"
+          spec:
+            containers:
+            - name: pod
+              image: '{{ image }}'
+              imagePullPolicy: IfNotPresent
+              args:
+              - sleep
+              - '1010'
+              ports:
+              - pod: pod1
+              volumeMounts:
+              - mountPath: /etc/some.dummy
+                name: /etc/some.dummy
+            volumes:
+            - name: /etc/some.dummy
+              configMap:
+                name: ocp-config
+      register: pod11_info
+
+      kubernetes.core.k8s:
+        state: present
+
+
+
+

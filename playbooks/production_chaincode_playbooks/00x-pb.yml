@@ -1,0 +1,9 @@
+---
+- name: Setup new cc
+  hosts: localshot
+
+  tasks:
+    - name: Install chaincode
+
+
+

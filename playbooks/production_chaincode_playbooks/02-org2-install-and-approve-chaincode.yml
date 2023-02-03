@@ -12,6 +12,13 @@
     - "{{ROOT}}/_cfg/fabric-org2-vars.yml"
     - "{{ROOT}}/_cfg/auth-vars.yml"
   tasks:
+  
+    # could be a different implementation as this is a differenet organization
+    - name: Download chaincode
+      shell: |     
+        curl -sSL https://github.com/hyperledgendary/fabric-contract-workflow/releases/download/{{smart_contract_version}}/assettxts-{{smart_contract_version}}.tgz -o {{ROOT}}/_cfg/{{ smart_contract_package }}
+
+
     - name: Install the chaincode on the peer
       ibm.blockchain_platform.installed_chaincode:
         api_endpoint: "{{ api_endpoint }}"

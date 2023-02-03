@@ -18,14 +18,14 @@
       ibm.blockchain_platform.registered_identity:
         api_endpoint: "{{ api_endpoint }}"
         api_authtype: "{{ api_authtype }}"
-        api_key: "{{ api_key }}"
-        api_secret: "{{ api_secret | default(omit) }}"
-        api_token_endpoint: "{{ api_token_endpoint | default(omit) }}"
-        certificate_authority: "{{ org1_ca_name }}"
-        registrar: "{{ wallet }}/{{ org1_ca_name }} Admin.json"
-        enrollment_id: "{{ application_enrollment_id }}"
-        enrollment_secret: "{{ application_enrollment_secret }}"
-        max_enrollments: "{{ application_max_enrollments }}"
+        # api_key: "{{ api_key }}"
+        # api_secret: "{{ api_secret | default(omit) }}"
+        # api_token_endpoint: "{{ api_token_endpoint | default(omit) }}"
+        # certificate_authority: "{{ org1_ca_name }}"
+        # registrar: "{{ wallet }}/{{ org1_ca_name }} Admin.json"
+        # enrollment_id: "{{ application_enrollment_id }}"
+        # enrollment_secret: "{{ application_enrollment_secret }}"
+        # max_enrollments: "{{ application_max_enrollments }}"
         type: "{{ application_enrollment_type }}"
         attributes:
           - name: "{{ smart_contract_name }}.admin"
@@ -39,7 +39,7 @@
         api_secret: "{{ api_secret | default(omit) }}"
         api_token_endpoint: "{{ api_token_endpoint | default(omit) }}"
         certificate_authority: "{{ org1_ca_name }}"
-        name:  "{{ smart_contract_name }}.admin"
+        name: "{{ smart_contract_name }}.admin"
         enrollment_id: "{{ application_enrollment_id }}"
         enrollment_secret: "{{ application_enrollment_secret }}"
         path: "{{ wallet }}/{{ application_name }}_appid_org1.json"
@@ -53,10 +53,14 @@
           apiVersion: v1
           kind: ConfigMap
           metadata:
-            name: "{{application_name}}-identity-org1-v1"
+            name: "{{ application_name }}-identity-org1-v1"
           data:
             cert: "{{identity.enrolled_identity.cert}}"
             private_key: "{{identity.enrolled_identity.private_key}}"
+
+    - name: ConfigMap for db access
+      kubernetes.core.k8s:
+        
 
 
     - name: Create a connection profile

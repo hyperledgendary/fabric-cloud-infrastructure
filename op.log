@@ -1,0 +1,116 @@
++ export INPUT_PLAYBOOK=playbooks/operator_console_playbooks/01-operator-install.yml
++ INPUT_PLAYBOOK=playbooks/operator_console_playbooks/01-operator-install.yml
++ export ARGSFILE=_cfg/domain.yml
++ ARGSFILE=_cfg/domain.yml
++ echo playbooks/operator_console_playbooks/01-operator-install.yml
+playbooks/operator_console_playbooks/01-operator-install.yml
++ echo _cfg/domain.yml
+_cfg/domain.yml
++ echo /github/workspace
+/github/workspace
++ whoami
+root
++ pwd
+/
++ export PYTHONPATH=/home/ibp-user/.local/lib/python3.9/site-packages
++ PYTHONPATH=/home/ibp-user/.local/lib/python3.9/site-packages
++ export HOME=/home/ibp-user
++ HOME=/home/ibp-user
++ export KUBECONFIG=/github/workspace/_cfg/k8s_context.yaml
++ KUBECONFIG=/github/workspace/_cfg/k8s_context.yaml
++ export IBP_ANSIBLE_LOG_FILENAME=/github/workspace/_cfg/__ansible.log
++ IBP_ANSIBLE_LOG_FILENAME=/github/workspace/_cfg/__ansible.log
++ [[ _cfg/domain.yml == \n\o\n\e ]]
++ ansible-playbook -e ROOT=/github/workspace --extra-vars @/github/workspace/_cfg/domain.yml /github/workspace/playbooks/operator_console_playbooks/01-operator-install.yml -vvv
+[0;34mansible-playbook [core 2.14.2][0m
+[0;34m  config file = None[0m
+[0;34m  configured module search path = ['/home/ibp-user/.ansible/plugins/modules', '/usr/share/ansible/plugins/modules'][0m
+[0;34m  ansible python module location = /home/ibp-user/.local/lib/python3.9/site-packages/ansible[0m
+[0;34m  ansible collection location = /home/ibp-user/.ansible/collections:/usr/share/ansible/collections[0m
+[0;34m  executable location = /home/ibp-user/.local/bin/ansible-playbook[0m
+[0;34m  python version = 3.9.13 (main, Nov  9 2022, 13:16:24) [GCC 8.5.0 20210514 (Red Hat 8.5.0-15)] (/usr/bin/python3.9)[0m
+[0;34m  jinja version = 3.1.2[0m
+[0;34m  libyaml = True[0m
+[0;34mNo config file found; using defaults[0m
+[0;34mhost_list declined parsing /etc/ansible/hosts as it did not pass its verify_file() method[0m
+[0;34mSkipping due to inventory source not existing or not being readable by the current user[0m
+[0;34mscript declined parsing /etc/ansible/hosts as it did not pass its verify_file() method[0m
+[0;34mauto declined parsing /etc/ansible/hosts as it did not pass its verify_file() method[0m
+[0;34mSkipping due to inventory source not existing or not being readable by the current user[0m
+[0;34myaml declined parsing /etc/ansible/hosts as it did not pass its verify_file() method[0m
+[0;34mSkipping due to inventory source not existing or not being readable by the current user[0m
+[0;34mini declined parsing /etc/ansible/hosts as it did not pass its verify_file() method[0m
+[0;34mSkipping due to inventory source not existing or not being readable by the current user[0m
+[0;34mtoml declined parsing /etc/ansible/hosts as it did not pass its verify_file() method[0m
+[1;35m[WARNING]: No inventory was parsed, only implicit localhost is available[0m
+[1;35m[WARNING]: provided hosts list is empty, only localhost is available. Note that[0m
+[1;35mthe implicit localhost does not match 'all'[0m
+[0;34mRead vars_file '{{ROOT}}/_cfg/operator-console-vars.yml'[0m
+[0;34mRead vars_file '{{ROOT}}/_cfg/operator-console-vars.yml'[0m
+[0;34mRead vars_file '{{ROOT}}/_cfg/operator-console-vars.yml'[0m
+[0;34mSkipping callback 'default', as we already have a stdout callback.[0m
+[0;34mSkipping callback 'minimal', as we already have a stdout callback.[0m
+[0;34mSkipping callback 'oneline', as we already have a stdout callback.[0m
+
+PLAYBOOK: 01-operator-install.yml **********************************************
+[0;34m1 plays in /github/workspace/playbooks/operator_console_playbooks/01-operator-install.yml[0m
+[0;34mRead vars_file '{{ROOT}}/_cfg/operator-console-vars.yml'[0m
+[0;34mRead vars_file '{{ROOT}}/_cfg/operator-console-vars.yml'[0m
+[0;34mRead vars_file '{{ROOT}}/_cfg/operator-console-vars.yml'[0m
+[1;35m[WARNING]: Found variable using reserved name: namespace[0m
+
+PLAY [Deploy Opensource custom resource definitions and operator] **************
+[0;34mRead vars_file '{{ROOT}}/_cfg/operator-console-vars.yml'[0m
+
+TASK [Gathering Facts] *********************************************************
+[1;30mtask path: /github/workspace/playbooks/operator_console_playbooks/01-operator-install.yml:5[0m
+[0;34m<127.0.0.1> ESTABLISH LOCAL CONNECTION FOR USER: root[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'echo ~root && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /root/.ansible/tmp `"&& mkdir "` echo /root/.ansible/tmp/ansible-tmp-1675950814.2951553-12-212634577142860 `" && echo ansible-tmp-1675950814.2951553-12-212634577142860="` echo /root/.ansible/tmp/ansible-tmp-1675950814.2951553-12-212634577142860 `" ) && sleep 0'[0m
+[0;34mUsing module file /home/ibp-user/.local/lib/python3.9/site-packages/ansible/modules/setup.py[0m
+[0;34m<127.0.0.1> PUT /home/ibp-user/.ansible/tmp/ansible-local-8pf6zvoht/tmpz7kffi_a TO /root/.ansible/tmp/ansible-tmp-1675950814.2951553-12-212634577142860/AnsiballZ_setup.py[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'chmod u+x /root/.ansible/tmp/ansible-tmp-1675950814.2951553-12-212634577142860/ /root/.ansible/tmp/ansible-tmp-1675950814.2951553-12-212634577142860/AnsiballZ_setup.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '/usr/bin/python3.9 /root/.ansible/tmp/ansible-tmp-1675950814.2951553-12-212634577142860/AnsiballZ_setup.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'rm -f -r /root/.ansible/tmp/ansible-tmp-1675950814.2951553-12-212634577142860/ > /dev/null 2>&1 && sleep 0'[0m
+[0;32mok: [localhost][0m
+[0;34mRead vars_file '{{ROOT}}/_cfg/operator-console-vars.yml'[0m
+[0;34mRead vars_file '{{ROOT}}/_cfg/operator-console-vars.yml'[0m
+[0;34mRead vars_file '{{ROOT}}/_cfg/operator-console-vars.yml'[0m
+
+TASK [ibm.blockchain_platform.fabric_operator_crds : Fail if target not specified] ***
+[1;30mtask path: /home/ibp-user/.ansible/collections/ansible_collections/ibm/blockchain_platform/roles/fabric_operator_crds/tasks/main.yml:5[0m
+[0;36mskipping: [localhost] => {[0m
+[0;36m    "changed": false,[0m
+[0;36m    "skip_reason": "Conditional result was False"[0m
+[0;36m}[0m
+[0;34mRead vars_file '{{ROOT}}/_cfg/operator-console-vars.yml'[0m
+
+TASK [ibm.blockchain_platform.fabric_operator_crds : Create custom resource definitions] ***
+[1;30mtask path: /home/ibp-user/.ansible/collections/ansible_collections/ibm/blockchain_platform/roles/fabric_operator_crds/tasks/main.yml:10[0m
+[0;34mRead vars_file '{{ROOT}}/_cfg/operator-console-vars.yml'[0m
+[0;34mRead vars_file '{{ROOT}}/_cfg/operator-console-vars.yml'[0m
+[0;36mincluded: /home/ibp-user/.ansible/collections/ansible_collections/ibm/blockchain_platform/roles/fabric_operator_crds/tasks/create.yml for localhost[0m
+[0;34mRead vars_file '{{ROOT}}/_cfg/operator-console-vars.yml'[0m
+[0;34mRead vars_file '{{ROOT}}/_cfg/operator-console-vars.yml'[0m
+
+TASK [ibm.blockchain_platform.fabric_operator_crds : Fail if architecture not specified] ***
+[1;30mtask path: /home/ibp-user/.ansible/collections/ansible_collections/ibm/blockchain_platform/roles/fabric_operator_crds/tasks/create.yml:5[0m
+[0;36mskipping: [localhost] => {[0m
+[0;36m    "changed": false,[0m
+[0;36m    "skip_reason": "Conditional result was False"[0m
+[0;36m}[0m
+[0;34mRead vars_file '{{ROOT}}/_cfg/operator-console-vars.yml'[0m
+
+TASK [ibm.blockchain_platform.fabric_operator_crds : Create custom resource definitions] ***
+[1;30mtask path: /home/ibp-user/.ansible/collections/ansible_collections/ibm/blockchain_platform/roles/fabric_operator_crds/tasks/create.yml:10[0m
+[0;34mRead vars_file '{{ROOT}}/_cfg/operator-console-vars.yml'[0m
+[0;36mincluded: /home/ibp-user/.ansible/collections/ansible_collections/ibm/blockchain_platform/roles/fabric_operator_crds/tasks/openshift/create.yml for localhost[0m
+[0;34mRead vars_file '{{ROOT}}/_cfg/operator-console-vars.yml'[0m
+[0;34mRead vars_file '{{ROOT}}/_cfg/operator-console-vars.yml'[0m
+
+TASK [ibm.blockchain_platform.fabric_operator_crds : Creating CRDs] ************
+[1;30mtask path: /home/ibp-user/.ansible/collections/ansible_collections/ibm/blockchain_platform/roles/fabric_operator_crds/tasks/openshift/create.yml:5[0m
+[0;34m<127.0.0.1> ESTABLISH LOCAL CONNECTION FOR USER: root[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'echo ~root && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /root/.ansible/tmp `"&& mkdir "` echo /root/.ansible/tmp/ansible-tmp-1675950817.507529-58-238971380014452 `" && echo ansible-tmp-1675950817.507529-58-238971380014452="` echo /root/.ansible/tmp/ansible-tmp-1675950817.507529-58-238971380014452 `" ) && sleep 0'[0m
+^C[0;31m [ERROR]: User interrupted execution[0m

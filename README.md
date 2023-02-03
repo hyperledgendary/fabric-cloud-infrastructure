@@ -97,3 +97,8 @@ just runpb ./playbooks/fabric_network_playbooks/00-org1.yml
 just runpb ./playbooks/fabric_network_playbooks/01-org2.yml
 ```
 
+## Deploying to Openshift
+
+- You need to configure the `target` variable to be `openshift`
+- Remember Openshift refers to namespaces as projects
+- Remember to create any storage classes and configure with the variable `console_storage_class`

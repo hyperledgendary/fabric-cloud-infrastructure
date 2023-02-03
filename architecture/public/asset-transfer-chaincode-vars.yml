@@ -3,8 +3,8 @@
 #
 ---
 smart_contract_name: "asset-transfer"
-smart_contract_version: "1.0.0"
-smart_contract_sequence: 1
+smart_contract_version: "v0.0.13"
+smart_contract_sequence: 0
 smart_contract_package: "asset-transfer-basic-typescript.tgz"
 # smart_contract_constructor: "initLedger"
 smart_contract_endorsement_policy: ""

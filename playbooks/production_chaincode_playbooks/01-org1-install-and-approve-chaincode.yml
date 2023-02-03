@@ -14,7 +14,7 @@
   tasks:
 
     - name: Download chaincode
-      shell: |
+      shell: |     
         curl -sSL https://github.com/hyperledgendary/fabric-contract-workflow/releases/download/{{smart_contract_version}}/assettxts-{{smart_contract_version}}.tgz -o {{ROOT}}/_cfg/{{ smart_contract_package }}
 
     - name: Install the chaincode on the peer
